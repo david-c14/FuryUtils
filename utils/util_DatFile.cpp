@@ -2,7 +2,7 @@
 #include <vector>
 #include <cstdint>
 #include <filesystem>
-#include "../classes/class_BinaryRead.cpp"
+#include "../classes/class_BinaryIO.cpp"
 #include "../classes/class_DatFile.cpp"
 
 int Usage(char *arg0) {

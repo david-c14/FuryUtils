@@ -18,21 +18,21 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 	uint8_t compressionBitCount = 0;
 	while (outputOffset < uncompressedSize) {
 		if (!compressionBitCount) {
-			BinaryRead::CheckSpace(inputBuffer, inputOffset, 1);
-			compressionBits = BinaryRead::ReadUInt8(inputBuffer, inputOffset);
+			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
+			compressionBits = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
 			compressionBitCount = 8;
 		}
 		bool uncompressed = compressionBits & 0x01;
 		compressionBitCount--;
 		compressionBits >>= 1;
 		if (uncompressed) {
-			BinaryRead::CheckSpace(inputBuffer, inputOffset, 1);
+			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
 			outputBuffer[outputOffset++] = inputBuffer[inputOffset++];
 		}
 		else {
-			BinaryRead::CheckSpace(inputBuffer, inputOffset, 2);
-			uint8_t byte1 = BinaryRead::ReadUInt8(inputBuffer, inputOffset);
-			uint8_t byte2 = BinaryRead::ReadUInt8(inputBuffer, inputOffset);
+			BinaryIO::CheckSpace(inputBuffer, inputOffset, 2);
+			uint8_t byte1 = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
+			uint8_t byte2 = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
 			uint8_t length = (byte2 & 0x0f) + 3;
 			if ((outputOffset + length) > uncompressedSize) {
 				throw "Compression overflow";
@@ -64,19 +64,19 @@ DatFile::DatFile(std::vector<char> &inputBuffer) {
 	fileBuffer.clear();
 	fileBuffer.swap(inputBuffer);
 	uint32_t bufferOffset = 0;
-	BinaryRead::CheckSpace(fileBuffer, bufferOffset, 2);
-	entryCount = BinaryRead::ReadUInt16(fileBuffer, bufferOffset);
+	BinaryIO::CheckSpace(fileBuffer, bufferOffset, 2);
+	entryCount = BinaryIO::ReadUInt16(fileBuffer, bufferOffset);
 	entries.resize(entryCount);
 	for (unsigned int i = 0; i < entryCount; i++) {
-		BinaryRead::CheckSpace(fileBuffer, bufferOffset, sizeof(DatFileHeader));
+		BinaryIO::CheckSpace(fileBuffer, bufferOffset, sizeof(DatFileHeader));
 		strncpy_s(entries[i].Header.FileName, 13, &(fileBuffer[bufferOffset]), 13);
 		entries[i].Header.FileName[12] = '\0';
 		bufferOffset += 13;
-		entries[i].Header.UncompressedSize = BinaryRead::ReadUInt32(fileBuffer, bufferOffset);
-		entries[i].Header.CompressedSize = BinaryRead::ReadUInt32(fileBuffer, bufferOffset);
-		entries[i].Header.IsNotCompressed = BinaryRead::ReadUInt8(fileBuffer, bufferOffset);
+		entries[i].Header.UncompressedSize = BinaryIO::ReadUInt32(fileBuffer, bufferOffset);
+		entries[i].Header.CompressedSize = BinaryIO::ReadUInt32(fileBuffer, bufferOffset);
+		entries[i].Header.IsNotCompressed = BinaryIO::ReadUInt8(fileBuffer, bufferOffset);
 		entries[i].CompressedBufferOffset = bufferOffset;
-		BinaryRead::CheckSpace(fileBuffer, bufferOffset, entries[i].Header.CompressedSize);
+		BinaryIO::CheckSpace(fileBuffer, bufferOffset, entries[i].Header.CompressedSize);
 		bufferOffset += entries[i].Header.CompressedSize;
 	}
 }
@@ -84,7 +84,7 @@ DatFile::DatFile(std::vector<char> &inputBuffer) {
 DatFile::DatFile() {
 	fileBuffer.resize(2);
 	uint32_t bufferOffset = 0;
-	BinaryRead::WriteUInt16(fileBuffer, bufferOffset, entryCount);
+	BinaryIO::WriteUInt16(fileBuffer, bufferOffset, entryCount);
 }
 
 void DatFile::Add(const char *fileName, std::vector<char> &inputBuffer, bool compress) {
@@ -99,7 +99,7 @@ void DatFile::Add(const char *fileName, std::vector<char> &inputBuffer, bool com
 	entry.Header.IsNotCompressed = (entry.Header.CompressedSize >= entry.Header.UncompressedSize);
 
 	uint32_t bufferOffset = 0;
-	BinaryRead::WriteUInt16(fileBuffer, bufferOffset, ++entryCount);
+	BinaryIO::WriteUInt16(fileBuffer, bufferOffset, ++entryCount);
 	bufferOffset = fileBuffer.size();
 	fileBuffer.resize(bufferOffset + sizeof(DatFileHeader) + entry.Header.CompressedSize);
 	entry.CompressedBufferOffset = bufferOffset;

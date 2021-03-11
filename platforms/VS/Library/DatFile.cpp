@@ -1,5 +1,4 @@
-#include "pch.h"
-#include "../../../classes/header_BinaryRead.hpp"
+#include "../../../classes/header_BinaryIO.hpp"
 #define APIEXPORT __declspec(dllexport)
 #include "../../../classes/class_DatFile.cpp"
 

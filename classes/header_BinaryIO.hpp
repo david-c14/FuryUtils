@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-namespace BinaryRead {
+namespace BinaryIO {
 	void CheckSpace(std::vector<char> &buffer, uint32_t bufferOffset, uint32_t required);
 
 	uint8_t ReadUInt8(std::vector<char> &buffer, uint32_t &bufferOffset);

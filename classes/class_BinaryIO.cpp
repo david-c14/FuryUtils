@@ -1,6 +1,6 @@
-#include "header_BinaryRead.hpp"
+#include "header_BinaryIO.hpp"
 
-namespace BinaryRead {
+namespace BinaryIO {
 
 	void CheckSpace(std::vector<char> &buffer, uint32_t bufferOffset, uint32_t required) {
 		if ((bufferOffset + required) > buffer.size()) {
