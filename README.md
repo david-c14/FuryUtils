@@ -1,6 +1,9 @@
 # FuryUtils
 Utilities for Fury of the Furries
 
+## Including
+- Tools for extracting/decompressing and rebuilding `.DAT` file archives
+
 ## Building
 
 ### Visual Studio
