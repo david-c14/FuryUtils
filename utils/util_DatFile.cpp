@@ -2,8 +2,8 @@
 #include <vector>
 #include <cstdint>
 #include <filesystem>
-#include "../Classes/class_BinaryRead.cpp"
-#include "../Classes/class_DatFile.cpp"
+#include "../classes/class_BinaryRead.cpp"
+#include "../classes/class_DatFile.cpp"
 
 int Usage(char *arg0) {
 	printf("%s usage:\n\n", arg0);

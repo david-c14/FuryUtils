@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "../../../Classes/header_BinaryRead.hpp"
+#include "../../../classes/header_BinaryRead.hpp"
 #define APIEXPORT __declspec(dllexport)
-#include "../../../Classes/class_DatFile.cpp"
+#include "../../../classes/class_DatFile.cpp"
 
 extern "C" {
 	APIEXPORT DatFile * __cdecl DatFile_createNew() {

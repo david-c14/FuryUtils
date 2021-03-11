@@ -1,2 +1,2 @@
 #include "pch.h"
-#include "../../../Classes/class_BinaryRead.cpp"
+#include "../../../classes/class_BinaryRead.cpp"
