@@ -15,8 +15,8 @@ There is no additional padding, even for odd-length files.
 
 Each header consists of:
 - 13 bytes containing a null-terminated ASCII name for the file. Typically this is in the DOS 8.3 format so 13 bytes is sufficient, including the terminator.
-- 4 bytes containing the compressed length of the file (in bytes).
-- 4 bytes containing the uncompressed length of the original file (in bytes).
+- 4 bytes containing the uncompressed length of the file (in bytes).
+- 4 bytes containing the compressed length of the original file (in bytes).
 - 1 byte containing either 0 if the file is compressed or 1 if the file is not compressed (typically because compression would yield a larger file).
 
 If a file in the archive is not compressed, the header will contain the same value for 'Compressed' and 'Uncompressed' length.
@@ -36,6 +36,6 @@ compressed length of the file. No word padding adjustments are required.
 | Header | Size |
 | :---: | :---: |
 | Filename | 13 |
-| Compressed Length | 4 |
 | Uncompressed Length | 4 |
+| Compressed Length | 4 |
 | Compressed Flag | 1 |
