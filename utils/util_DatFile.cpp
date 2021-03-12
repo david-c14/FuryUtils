@@ -9,6 +9,7 @@ int Usage(char *arg0) {
 	printf("%s usage:\n\n", arg0);
 	printf("\tThis Message                : %s -?\n", arg0);
 	printf("\tList entries                : %s -l datfile\n", arg0);
+	printf("\tList entries in brief form  : %s -b datfile\n", arg0);
 	printf("\tExtract entry               : %s -x datfile entry\n", arg0);
 	printf("\tExtract all entries         : %s -X datfile\n", arg0);
 	printf("\tCreate a compressed file    : %s -c datfile entry [...]", arg0);
@@ -41,6 +42,41 @@ int List(int argc, char* argv[]) {
 			printf("------------  ------------  ------------\n");
 			while (dfh = df.Next()) {
 				printf("%-12s  %12d  %12d\n", dfh->FileName, dfh->CompressedSize, dfh->UncompressedSize);
+			}
+			return 0;
+		}
+		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
+		return 1;
+	}
+	catch (const std::exception& ex)
+	{
+		printf("%s Error:\n\n%s\n", argv[0], ex.what());
+		return 1;
+	}
+	return 1;
+}
+
+int Brief(int argc, char* argv[]) {
+	if (argc != 3) {
+		return Usage(argv[0]);
+	}
+	try
+	{
+		std::ifstream file(argv[2], std::ios::binary | std::ios::ate);
+		if (!file) {
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
+			return 1;
+		}
+		std::streamsize size = file.tellg();
+		file.seekg(0, std::ios::beg);
+
+		std::vector<char> buffer((uint32_t)size);
+		if (file.read(buffer.data(), size))
+		{
+			DatFile df(buffer);
+			DatFileHeader *dfh;
+			while (dfh = df.Next()) {
+				printf("%s ", dfh->FileName);
 			}
 			return 0;
 		}
@@ -164,7 +200,7 @@ std::string GetFileName(const std::string &s) {
 		return(s.substr(i + 1, s.length() - i));
 	}
 
-	return("");
+	return(s);
 }
 
 int Create(int argc, char* argv[], bool compress) {
@@ -174,6 +210,7 @@ int Create(int argc, char* argv[], bool compress) {
 
 	DatFile df;
 
+	printf("%s: creating %s archive %s\n\n", argv[0], compress?"compressed":"uncompressed", argv[2]);
 	for (int i = 3; i < argc; i++) {
 		std::string path = argv[i];
 		std::string filename = GetFileName(path);
@@ -189,6 +226,7 @@ int Create(int argc, char* argv[], bool compress) {
 		if (file.read(buffer.data(), size))
 		{
 			df.Add(filename.c_str(), buffer, compress);
+			printf("%s\n", filename.c_str());
 		}
 		else {
 			printf("%s Error:\n\n Input file \"%s\" could not be read\n", argv[0], filename.c_str());
@@ -216,6 +254,9 @@ int main(int argc, char* argv[]) {
 	}
 	if (!strncmp(argv[1], "-l", 2)) {
 		return List(argc, argv);
+	}
+	if (!strncmp(argv[1], "-b", 2)) {
+		return Brief(argc, argv);
 	}
 	if (!strncmp(argv[1], "-x", 2)) {
 		return Extract(argc, argv);
