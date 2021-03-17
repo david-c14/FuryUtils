@@ -16,17 +16,51 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 	uint32_t outputOffset = 0;
 	uint8_t compressionBits;
 	uint8_t compressionBitCount = 0;
+#ifdef LOGGING
+	uint8_t frame[17];
+	uint8_t frameLength = 0;
+	uint32_t frameOffset = 0;
+	uint32_t originalOffset = 0;
+#endif
 	while (outputOffset < uncompressedSize) {
 		if (!compressionBitCount) {
 			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
 			compressionBits = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
 			compressionBitCount = 8;
+#ifdef LOGGING
+			if (inputOffset) {
+				printf("    ");
+				for (unsigned int i = 0; i < frameLength; i++) {
+					printf("%02x-", (int)(frame[i]));
+				}
+				printf("  ");
+				for (unsigned int i = 1; i < frameLength; i++) {
+					if (frame[i] < 32) {
+						printf("_");
+					}
+					else if (frame[i] > 126) {
+						printf("_");
+					}
+					else {
+						printf("%c", (frame[i]));
+					}
+				}
+				printf("\n");
+			}
+			frameLength = 0;
+			frameOffset = inputOffset;
+			frame[frameLength++] = compressionBits;
+#endif
 		}
 		bool uncompressed = compressionBits & 0x01;
 		compressionBitCount--;
 		compressionBits >>= 1;
 		if (uncompressed) {
 			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
+#ifdef LOGGING
+			frame[frameLength++] = inputBuffer[inputOffset];
+			printf("  %08x  %08x\n", inputOffset, outputOffset);
+#endif
 			outputBuffer[outputOffset++] = inputBuffer[inputOffset++];
 		}
 		else {
@@ -38,21 +72,57 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 				throw "Compression overflow";
 			}
 			int32_t offset = ((byte2 >> 4) << 8) + byte1;
+#ifdef LOGGING
+			originalOffset = offset;
+			frame[frameLength++] = byte1;
+			frame[frameLength++] = byte2;
+#endif
 			offset += 0x1012;
 			offset += (outputOffset & 0xfffff000);
 			while (offset >= (int32_t)outputOffset)
 				offset -= 0x1000;
+#ifdef LOGGING
+			printf("  %08x  %08x  %02d  %08x  %08x  ", inputOffset - 2, outputOffset, (int)length, (int)originalOffset, (int)offset);
+#endif
 			while (length--) {
 				if (offset < 0) {
+#ifdef LOGGING
+					printf("20-");
+#endif
 					outputBuffer[outputOffset++] = ' ';
 				}
 				else {
+#ifdef LOGGING
+					printf("%02x-", (int)(outputBuffer[offset]));
+#endif
 					outputBuffer[outputOffset++] = outputBuffer[offset];
 				}
 				offset++;
 			}
+#ifdef LOGGING
+			printf("\n");
+#endif
 		}
 	}
+#ifdef LOGGING
+	printf("    ");
+	for (unsigned int i = 0; i < frameLength; i++) {
+		printf("%02x-", (int)(frame[i]));
+	}
+	printf("  ");
+	for (unsigned int i = 1; i < frameLength; i++) {
+		if (frame[i] < 32) {
+			printf("_");
+		}
+		else if (frame[i] > 126) {
+			printf("_");
+		}
+		else {
+			printf("%c", (frame[i]));
+		}
+	}
+	printf("\n");
+#endif
 	outputBuffer.swap(inputBuffer);
 }
 
