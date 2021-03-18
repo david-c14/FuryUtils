@@ -126,7 +126,87 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 	outputBuffer.swap(inputBuffer);
 }
 
-void DatFile::Compress(std::vector<char> &inputBuffer) {
+void DatFile::Compress(std::vector<char> &originalBuffer) {
+	uint32_t inputLength = originalBuffer.size();
+	std::vector<char> inputBuffer(inputLength + 18);
+	std::vector<char> workingBuffer(inputLength);
+	for (unsigned int i = 0; i < 18; i++) {
+		inputBuffer[i] = ' ';
+	}
+	memcpy(inputBuffer.data() + 18, originalBuffer.data(), inputLength);
+	char frame[17];
+	int frameLength = 1;
+	int bitCount = 0;
+	uint32_t inputOffset = 18;
+	inputLength += 18;
+	uint32_t outputOffset = 0;
+	printf("inputLength: %d\n", inputLength);
+	while (inputOffset < inputLength) {
+		// Search for matching sequence
+		uint32_t searchStart = 0;
+		uint32_t searchEnd = inputOffset - 1;
+		uint32_t searchLength = 18;
+		if (inputBuffer[inputOffset] != ' ') {
+			searchStart = 18;
+		}
+		if ((inputOffset - searchStart) > 4096) {
+			searchStart = inputOffset - 4096;
+		}
+		if ((searchEnd + searchLength + 1) > inputLength) {
+			searchLength = inputLength - searchEnd - 1;
+		}
+		printf("%d %d %d\n", searchStart, searchEnd, searchLength);
+		uint8_t foundLength = 2;
+		uint32_t foundOffset = 0;
+		while (searchStart < searchEnd) {
+			uint8_t thisLength = 0;
+			while (thisLength < searchLength) {
+				if (inputBuffer[searchStart + thisLength] != inputBuffer[inputOffset + thisLength])
+					break;
+				thisLength++;
+			}
+			if (thisLength > foundLength) {
+				foundLength = thisLength;
+				foundOffset = searchStart;
+			}
+			searchStart++;
+		}
+		frame[0] >>= 1;
+		frame[0] &= 0x7f;
+		if (foundLength > 2) {
+			inputOffset += foundLength;
+			foundLength -= 3;
+			foundOffset -= 36;
+			foundOffset &= 0xfff;
+			uint8_t byte1 = foundOffset & 0xff;
+			uint8_t byte2 = ((foundOffset >> 8) << 4) + foundLength;
+			frame[frameLength++] = byte1;
+			frame[frameLength++] = byte2;
+		}
+		else {
+			frame[0] |= 0x80;
+			frame[frameLength++] = inputBuffer[inputOffset++];
+		}
+		bitCount++;
+		if (bitCount == 8) {
+			memcpy(workingBuffer.data() + outputOffset, frame, frameLength);
+			outputOffset += frameLength;
+			bitCount = 0;
+			frameLength = 1;
+		}
+	}
+	printf("End\n");
+	if (bitCount > 0) {
+		while (bitCount < 8) {
+			frame[0] >>= 1;
+			bitCount++;
+		}
+		memcpy(workingBuffer.data() + outputOffset, frame, frameLength);
+		outputOffset += frameLength;
+	}
+	std::vector<char> outputBuffer(outputOffset);
+	memcpy(outputBuffer.data(), workingBuffer.data(), outputOffset);
+	originalBuffer.swap(outputBuffer);
 	return;
 }
 
