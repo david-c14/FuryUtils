@@ -115,6 +115,12 @@ int Extract(int argc, char* argv[]) {
 				if (strncmp(argv[3], dfh->FileName, 12)) {
 					continue;
 				}
+				if (dfh->IsNotCompressed) {
+					printf("%12s\tUncompressed\n", dfh->FileName);
+				}
+				else {
+					printf("%12s\tCompressed - %d%%\n", dfh->FileName, (100 * dfh->CompressedSize) / dfh->UncompressedSize);
+				}
 				std::vector<char> uncompressedBuffer;
 				df.Entry(uncompressedBuffer);
 				std::ofstream outFile(dfh->FileName, std::ios::binary | std::ios::trunc);
@@ -160,9 +166,16 @@ int ExtractAll(int argc, char* argv[]) {
 		{
 			DatFile df(buffer);
 			DatFileHeader *dfh;
+#ifndef LOGGING
 			printf("%s: Extracting all entries from \"%s\"\n\n", argv[0], argv[2]);
+#endif
 			while (dfh = df.Next()) {
-				printf("%s\n", dfh->FileName);
+				if (dfh->IsNotCompressed) {
+					printf("%12s\tUncompressed\t%d\n", dfh->FileName, dfh->UncompressedSize);
+				}
+				else {
+					printf("%12s\tCompressed - %d%%\t%d\t%d\n", dfh->FileName, (100 * dfh->CompressedSize) / dfh->UncompressedSize, dfh->UncompressedSize, dfh->CompressedSize);
+				}
 				std::vector<char> uncompressedBuffer;
 				df.Entry(uncompressedBuffer);
 				std::ofstream outFile(dfh->FileName, std::ios::binary | std::ios::trunc);
@@ -210,7 +223,9 @@ int Create(int argc, char* argv[], bool compress) {
 
 	DatFile df;
 
+#ifndef LOGGING
 	printf("%s: creating %s archive %s\n\n", argv[0], compress?"compressed":"uncompressed", argv[2]);
+#endif
 	for (int i = 3; i < argc; i++) {
 		std::string path = argv[i];
 		std::string filename = GetFileName(path);
@@ -226,7 +241,13 @@ int Create(int argc, char* argv[], bool compress) {
 		if (file.read(buffer.data(), size))
 		{
 			df.Add(filename.c_str(), buffer, compress);
-			printf("%s\n", filename.c_str());
+			DatFileHeader *dfh = df.Header(df.EntryCount() - 1);
+			if (dfh->IsNotCompressed) {
+				printf("%12s\tUncompressed\t%d\n", dfh->FileName, dfh->UncompressedSize);
+			}
+			else {
+				printf("%12s\tCompressed - %d%%\t%d\t%d\n", dfh->FileName, (100 * dfh->CompressedSize) / dfh->UncompressedSize, dfh->UncompressedSize, dfh->CompressedSize);
+			}
 		}
 		else {
 			printf("%s Error:\n\n Input file \"%s\" could not be read\n", argv[0], filename.c_str());
