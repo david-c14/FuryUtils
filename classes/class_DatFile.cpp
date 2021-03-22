@@ -59,7 +59,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
 #ifdef LOGGING
 			frame[frameLength++] = inputBuffer[inputOffset];
-			printf("  %08x  %08x\n", inputOffset, outputOffset);
+			printf("  %08x  %08x                          %02x\n", inputOffset, outputOffset, (int)(inputBuffer[inputOffset]));
 #endif
 			outputBuffer[outputOffset++] = inputBuffer[inputOffset++];
 		}
@@ -131,12 +131,12 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 	uint32_t inputLength = originalLength + 18;
 	std::vector<char> inputBuffer(inputLength);
 	std::vector<char> workingBuffer(originalLength);
-	char *inputArray = inputBuffer.data();
-	char *workingArray = workingBuffer.data();
+	//char *inputArray = inputBuffer.data();
+	//char *workingArray = workingBuffer.data();
 	for (unsigned int i = 0; i < 18; i++) {
-		inputArray[i] = ' ';
+		inputBuffer[i] = ' ';
 	}
-	memcpy(inputArray + 18, originalBuffer.data(), originalLength);
+	memcpy(inputBuffer.data() + 18, originalBuffer.data(), originalLength);
 	uint8_t frame[17];
 	uint8_t frameLength = 1;
 	uint8_t bitCount = 0;
@@ -145,23 +145,23 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 	while (inputOffset < inputLength) {
 		// Search for matching sequence
 		uint32_t searchStart = 0;
-		uint32_t searchEnd = inputOffset - 1;
+		uint32_t searchEnd = inputOffset;
 		uint32_t searchLength = 18;
-		if (inputArray[inputOffset] != ' ') {
+		if (inputBuffer[inputOffset] != ' ') {
 			searchStart = 18;
 		}
 		if ((inputOffset - searchStart) > 4096) {
 			searchStart = inputOffset - 4096;
 		}
-		if ((searchEnd + searchLength + 1) > inputLength) {
-			searchLength = inputLength - searchEnd - 1;
+		if ((searchEnd + searchLength) > inputLength) {
+			searchLength = inputLength - searchEnd;
 		}
 		uint8_t foundLength = 2;
 		uint32_t foundOffset = 0;
 		while (searchStart < searchEnd) {
 			uint8_t thisLength = 0;
 			while (thisLength < searchLength) {
-				if (inputArray[searchStart + thisLength] != inputArray[inputOffset + thisLength])
+				if (inputBuffer[searchStart + thisLength] != inputBuffer[inputOffset + thisLength])
 					break;
 				thisLength++;
 			}
@@ -177,7 +177,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 #ifdef LOGGING
 			printf("  %08x  %08x  %02d  %08x  %08x  ", outputOffset + frameLength, inputOffset - 18, foundLength, (foundOffset - 36) & 0xfff, (foundOffset - 18));
 			for (unsigned int i = 0; i < foundLength; i++) {
-				printf("%02x-", inputArray[foundOffset + i]);
+				printf("%02x-", inputBuffer[foundOffset + i]);
 			}
 			printf("\n");
 #endif
@@ -192,10 +192,10 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 		}
 		else {
 #ifdef LOGGING
-			printf("  %08x  %08x\n", outputOffset + frameLength, inputOffset - 18);
+			printf("  %08x  %08x                          %02x\n", outputOffset + frameLength, inputOffset - 18, (int)(inputBuffer[inputOffset]));
 #endif
 			frame[0] |= 0x80;
-			frame[frameLength++] = inputArray[inputOffset++];
+			frame[frameLength++] = inputBuffer[inputOffset++];
 		}
 		bitCount++;
 		if (bitCount == 8) {
@@ -221,7 +221,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 			}
 			printf("\n");
 #endif
-			memcpy(workingArray + outputOffset, frame, frameLength);
+			memcpy(workingBuffer.data() + outputOffset, frame, frameLength);
 			outputOffset += frameLength;
 			bitCount = 0;
 			frameLength = 1;
@@ -254,11 +254,11 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 		}
 		printf("\n");
 #endif
-		memcpy(workingArray + outputOffset, frame, frameLength);
+		memcpy(workingBuffer.data() + outputOffset, frame, frameLength);
 		outputOffset += frameLength;
 	}
 	std::vector<char> outputBuffer(outputOffset);
-	memcpy(outputBuffer.data(), workingArray, outputOffset);
+	memcpy(outputBuffer.data(), workingBuffer.data(), outputOffset);
 	originalBuffer.swap(outputBuffer);
 	return;
 }
