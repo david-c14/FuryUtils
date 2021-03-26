@@ -208,79 +208,8 @@ public:
 	}
 };
 
+
 void DatFile::Compress(std::vector<char> &originalBuffer) {
-	uint32_t originalLength = (uint32_t)(originalBuffer.size());
-	uint32_t inputLength = originalLength + 18;
-	std::vector<char> inputBuffer(inputLength);
-	std::vector<char> workingBuffer(originalLength);
-	char *inputArray = inputBuffer.data();
-	char *workingArray = workingBuffer.data();
-	uint32_t inputOffset = 18;
-	uint32_t outputOffset = 0;
-	Frame frame(workingArray, &outputOffset, originalLength);
-	for (unsigned int i = 0; i < 18; i++) {
-		inputArray[i] = ' ';
-	}
-	memcpy(inputArray + 18, originalBuffer.data(), originalLength);
-	while (inputOffset < inputLength) {
-		// Search for matching sequence
-		uint32_t searchStart = 0;
-		uint32_t searchEnd = inputOffset;
-		uint32_t searchLength = 18;
-		if (inputArray[inputOffset] != ' ') {
-			searchStart = 18;
-		}
-		if ((inputOffset - searchStart) > 4096) {
-			searchStart = inputOffset - 4096;
-		}
-		if ((searchEnd + searchLength) > inputLength) {
-			searchLength = inputLength - searchEnd;
-		}
-		uint8_t foundLength = 2;
-		uint32_t foundOffset = 0;
-		while (searchStart < searchEnd) {
-			uint8_t thisLength = 0;
-			while (thisLength < searchLength) {
-				if (inputArray[searchStart + thisLength] != inputArray[inputOffset + thisLength])
-					break;
-				thisLength++;
-			}
-			if (thisLength > foundLength) {
-				foundLength = thisLength;
-				foundOffset = searchStart;
-			}
-			searchStart++;
-		}
-		if (foundLength > 2) {
-#ifdef LOGGING
-			printf("  %08x  %08x  %02d  %08x  %08x  ", outputOffset + frame.Length(), inputOffset - 18, foundLength, (foundOffset - 36) & 0xfff, (foundOffset - 18));
-			for (unsigned int i = 0; i < foundLength; i++) {
-				printf("%02hhx-", inputArray[foundOffset + i]);
-			}
-			printf("\n");
-#endif
-			inputOffset += foundLength;
-			foundLength -= 3;
-			foundOffset -= 36;
-			foundOffset &= 0xfff;
-			frame.Add(foundOffset, foundLength);
-		}
-		else {
-#ifdef LOGGING
-			printf("  %08x  %08x                          %02hhx\n", outputOffset + frame.Length(), inputOffset - 18, inputArray[inputOffset]);
-#endif
-			frame.Add(inputArray[inputOffset++]);
-		}
-	}
-	frame.Close();
-	std::vector<char> outputBuffer(outputOffset);
-	memcpy(outputBuffer.data(), workingBuffer.data(), outputOffset);
-	originalBuffer.swap(outputBuffer);
-	return;
-}
-
-
-void DatFile::OldCompress(std::vector<char> &originalBuffer) {
 	uint32_t originalLength = (uint32_t)(originalBuffer.size());
 	uint32_t inputLength = originalLength + 18;
 	std::vector<char> inputBuffer(inputLength);
@@ -313,17 +242,17 @@ void DatFile::OldCompress(std::vector<char> &originalBuffer) {
 		uint8_t foundLength = 2;
 		uint32_t foundOffset = 0;
 		while (searchStart < searchEnd) {
+			searchEnd--;
 			uint8_t thisLength = 0;
 			while (thisLength < searchLength) {
-				if (inputArray[searchStart + thisLength] != inputArray[inputOffset + thisLength])
+				if (inputArray[searchEnd + thisLength] != inputArray[inputOffset + thisLength])
 					break;
 				thisLength++;
 			}
 			if (thisLength > foundLength) {
 				foundLength = thisLength;
-				foundOffset = searchStart;
+				foundOffset = searchEnd;
 			}
-			searchStart++;
 		}
 		frame[0] >>= 1;
 		frame[0] &= 0x7f;

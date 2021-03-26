@@ -32,7 +32,6 @@ private:
 	void InternalEntry(std::vector<char> &inputBuffer, uint16_t index);
 	void Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSize);
 	void Compress(std::vector<char> &inputBuffer);
-	void OldCompress(std::vector<char> &inputBuffer);
 
 public:
 
