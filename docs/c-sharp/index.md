@@ -1,6 +1,6 @@
 # C# Library
 
-    namespace carbon14.FuryUtils
+```namespace carbon14.FuryUtils```
     
 [`class DatFile`](DatFile.md) Class for handling [datfiles](../formats/datfile.md).  
 
