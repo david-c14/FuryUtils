@@ -31,7 +31,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 			if (inputOffset > 1) {
 				printf("    ");
 				for (unsigned int i = 0; i < frameLength; i++) {
-					printf("%02x-", (int)(frame[i]));
+					printf("%02hhx-", frame[i]);
 				}
 				printf("  ");
 				for (unsigned int i = 1; i < frameLength; i++) {
@@ -59,7 +59,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
 #ifdef LOGGING
 			frame[frameLength++] = inputBuffer[inputOffset];
-			printf("  %08x  %08x                          %02x\n", inputOffset, outputOffset, (int)(inputBuffer[inputOffset]));
+			printf("  %08x  %08x                          %02hhx\n", inputOffset, outputOffset, inputBuffer[inputOffset]);
 #endif
 			outputBuffer[outputOffset++] = inputBuffer[inputOffset++];
 		}
@@ -82,7 +82,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 			while (offset >= (int32_t)outputOffset)
 				offset -= 0x1000;
 #ifdef LOGGING
-			printf("  %08x  %08x  %02d  %08x  %08x  ", inputOffset - 2, outputOffset, (int)length, (int)originalOffset, (int)offset);
+			printf("  %08x  %08x  %02d  %08x  %08x  ", inputOffset - 2, outputOffset, length, originalOffset, offset);
 #endif
 			while (length--) {
 				if (offset < 0) {
@@ -93,7 +93,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 				}
 				else {
 #ifdef LOGGING
-					printf("%02x-", (int)(outputBuffer[offset]));
+					printf("%02hhx-", outputBuffer[offset]);
 #endif
 					outputBuffer[outputOffset++] = outputBuffer[offset];
 				}
@@ -107,7 +107,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 #ifdef LOGGING
 	printf("    ");
 	for (unsigned int i = 0; i < frameLength; i++) {
-		printf("%02x-", (int)(frame[i]));
+		printf("%02hhx-", frame[i]);
 	}
 	printf("  ");
 	for (unsigned int i = 1; i < frameLength; i++) {
@@ -118,7 +118,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 			printf("_");
 		}
 		else {
-			printf("%c", (frame[i]));
+			printf("%c", frame[i]);
 		}
 	}
 	printf("\n");
@@ -126,7 +126,161 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 	outputBuffer.swap(inputBuffer);
 }
 
+struct Frame {
+	uint8_t frame[17];
+	uint8_t frameLength = 1;
+	uint8_t bitCount = 0;
+	char *workingArray;
+	uint32_t *outputOffset;
+	uint32_t originalLength;
+public:
+
+	Frame(char *workingArray, uint32_t *outputOffset, uint32_t originalLength) {
+		this->workingArray = workingArray;
+		this->outputOffset = outputOffset;
+		this->originalLength = originalLength;
+	}
+
+	uint8_t Length() {
+		return frameLength;
+	}
+
+	bool Write() {
+		bitCount++;
+		if (bitCount < 8) {
+			return true;
+		}
+		if ((*outputOffset + frameLength) > originalLength) {
+			return false;
+		}
+#ifdef LOGGING
+		printf("    ");
+		for (unsigned int i = 0; i < frameLength; i++) {
+			printf("%02hhx-", frame[i]);
+		}
+		printf("  ");
+		for (unsigned int i = 1; i < frameLength; i++) {
+			if (frame[i] < 32) {
+				printf("_");
+			}
+			else if (frame[i] > 126) {
+				printf("_");
+			}
+			else {
+				printf("%c", (frame[i]));
+			}
+		}
+		printf("\n");
+#endif
+		memcpy(workingArray + *outputOffset, frame, frameLength);
+		*outputOffset += frameLength;
+		bitCount = 0;
+		frameLength = 1;
+		return true;
+	}
+
+	bool Add(char c) {
+		frame[0] >>= 1;
+		frame[0] |= 0x80;
+		frame[frameLength++] = c;
+		return Write();
+	}
+
+	bool Add(uint32_t offset, uint32_t length) {
+		frame[0] >>= 1;
+		frame[0] &= 0x7f;
+		uint8_t byte1 = offset & 0xff;
+		uint8_t byte2 = ((offset >> 8) << 4) + length;
+		frame[frameLength++] = byte1;
+		frame[frameLength++] = byte2;
+		return Write();
+	}
+
+	bool Close() {
+		if (bitCount == 0) {
+			return true;
+		}
+		while (bitCount < 8) {
+			frame[0] >>= 1;
+			bitCount++;
+		}
+		return Write();
+	}
+};
+
 void DatFile::Compress(std::vector<char> &originalBuffer) {
+	uint32_t originalLength = (uint32_t)(originalBuffer.size());
+	uint32_t inputLength = originalLength + 18;
+	std::vector<char> inputBuffer(inputLength);
+	std::vector<char> workingBuffer(originalLength);
+	char *inputArray = inputBuffer.data();
+	char *workingArray = workingBuffer.data();
+	uint32_t inputOffset = 18;
+	uint32_t outputOffset = 0;
+	Frame frame(workingArray, &outputOffset, originalLength);
+	for (unsigned int i = 0; i < 18; i++) {
+		inputArray[i] = ' ';
+	}
+	memcpy(inputArray + 18, originalBuffer.data(), originalLength);
+	while (inputOffset < inputLength) {
+		// Search for matching sequence
+		uint32_t searchStart = 0;
+		uint32_t searchEnd = inputOffset;
+		uint32_t searchLength = 18;
+		if (inputArray[inputOffset] != ' ') {
+			searchStart = 18;
+		}
+		if ((inputOffset - searchStart) > 4096) {
+			searchStart = inputOffset - 4096;
+		}
+		if ((searchEnd + searchLength) > inputLength) {
+			searchLength = inputLength - searchEnd;
+		}
+		uint8_t foundLength = 2;
+		uint32_t foundOffset = 0;
+		while (searchStart < searchEnd) {
+			uint8_t thisLength = 0;
+			while (thisLength < searchLength) {
+				if (inputArray[searchStart + thisLength] != inputArray[inputOffset + thisLength])
+					break;
+				thisLength++;
+			}
+			if (thisLength > foundLength) {
+				foundLength = thisLength;
+				foundOffset = searchStart;
+			}
+			searchStart++;
+		}
+		if (foundLength > 2) {
+#ifdef LOGGING
+			printf("  %08x  %08x  %02d  %08x  %08x  ", outputOffset + frame.Length(), inputOffset - 18, foundLength, (foundOffset - 36) & 0xfff, (foundOffset - 18));
+			for (unsigned int i = 0; i < foundLength; i++) {
+				printf("%02hhx-", inputArray[foundOffset + i]);
+			}
+			printf("\n");
+#endif
+			inputOffset += foundLength;
+			foundLength -= 3;
+			foundOffset -= 36;
+			foundOffset &= 0xfff;
+			frame.Add(foundOffset, foundLength);
+		}
+		else {
+#ifdef LOGGING
+			printf("  %08x  %08x                          %02hhx\n", outputOffset + frame.Length(), inputOffset - 18, inputArray[inputOffset]);
+#endif
+			frame.Add(inputArray[inputOffset++]);
+		}
+	}
+	frame.Close();
+	std::vector<char> outputBuffer(outputOffset);
+	memcpy(outputBuffer.data(), workingBuffer.data(), outputOffset);
+	originalBuffer.swap(outputBuffer);
+	return;
+}
+
+
+void DatFile::OldCompress(std::vector<char> &originalBuffer) {
 	uint32_t originalLength = (uint32_t)(originalBuffer.size());
 	uint32_t inputLength = originalLength + 18;
 	std::vector<char> inputBuffer(inputLength);
@@ -177,7 +331,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 #ifdef LOGGING
 			printf("  %08x  %08x  %02d  %08x  %08x  ", outputOffset + frameLength, inputOffset - 18, foundLength, (foundOffset - 36) & 0xfff, (foundOffset - 18));
 			for (unsigned int i = 0; i < foundLength; i++) {
-				printf("%02x-", inputArray[foundOffset + i]);
+				printf("%02hhx-", inputArray[foundOffset + i]);
 			}
 			printf("\n");
 #endif
@@ -192,7 +346,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 		}
 		else {
 #ifdef LOGGING
-			printf("  %08x  %08x                          %02x\n", outputOffset + frameLength, inputOffset - 18, (int)(inputArray[inputOffset]));
+			printf("  %08x  %08x                          %02hhx\n", outputOffset + frameLength, inputOffset - 18, inputArray[inputOffset]);
 #endif
 			frame[0] |= 0x80;
 			frame[frameLength++] = inputArray[inputOffset++];
@@ -205,7 +359,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 #ifdef LOGGING
 			printf("    ");
 			for (unsigned int i = 0; i < frameLength; i++) {
-				printf("%02x-", (int)(frame[i]));
+				printf("%02hhx-", frame[i]);
 			}
 			printf("  ");
 			for (unsigned int i = 1; i < frameLength; i++) {
@@ -238,7 +392,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 #ifdef LOGGING
 		printf("    ");
 		for (unsigned int i = 0; i < frameLength; i++) {
-			printf("%02x-", (int)(frame[i]));
+			printf("%02hhx-", frame[i]);
 		}
 		printf("  ");
 		for (unsigned int i = 1; i < frameLength; i++) {
@@ -249,7 +403,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 				printf("_");
 			}
 			else {
-				printf("%c", (frame[i]));
+				printf("%c", frame[i]);
 			}
 		}
 		printf("\n");
