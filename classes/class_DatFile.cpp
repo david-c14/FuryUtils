@@ -69,7 +69,7 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 			uint8_t byte2 = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
 			uint8_t length = (byte2 & 0x0f) + 3;
 			if ((outputOffset + length) > uncompressedSize) {
-				throw "Compression overflow";
+				Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
 			}
 			int32_t offset = ((byte2 >> 4) << 8) + byte1;
 #ifdef LOGGING
@@ -127,16 +127,16 @@ void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSi
 }
 
 void DatFile::Compress(std::vector<char> &originalBuffer) {
-	uint32_t originalLength = originalBuffer.size();
+	uint32_t originalLength = (uint32_t)(originalBuffer.size());
 	uint32_t inputLength = originalLength + 18;
 	std::vector<char> inputBuffer(inputLength);
 	std::vector<char> workingBuffer(originalLength);
-	//char *inputArray = inputBuffer.data();
-	//char *workingArray = workingBuffer.data();
+	char *inputArray = inputBuffer.data();
+	char *workingArray = workingBuffer.data();
 	for (unsigned int i = 0; i < 18; i++) {
-		inputBuffer[i] = ' ';
+		inputArray[i] = ' ';
 	}
-	memcpy(inputBuffer.data() + 18, originalBuffer.data(), originalLength);
+	memcpy(inputArray + 18, originalBuffer.data(), originalLength);
 	uint8_t frame[17];
 	uint8_t frameLength = 1;
 	uint8_t bitCount = 0;
@@ -147,7 +147,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 		uint32_t searchStart = 0;
 		uint32_t searchEnd = inputOffset;
 		uint32_t searchLength = 18;
-		if (inputBuffer[inputOffset] != ' ') {
+		if (inputArray[inputOffset] != ' ') {
 			searchStart = 18;
 		}
 		if ((inputOffset - searchStart) > 4096) {
@@ -161,7 +161,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 		while (searchStart < searchEnd) {
 			uint8_t thisLength = 0;
 			while (thisLength < searchLength) {
-				if (inputBuffer[searchStart + thisLength] != inputBuffer[inputOffset + thisLength])
+				if (inputArray[searchStart + thisLength] != inputArray[inputOffset + thisLength])
 					break;
 				thisLength++;
 			}
@@ -177,7 +177,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 #ifdef LOGGING
 			printf("  %08x  %08x  %02d  %08x  %08x  ", outputOffset + frameLength, inputOffset - 18, foundLength, (foundOffset - 36) & 0xfff, (foundOffset - 18));
 			for (unsigned int i = 0; i < foundLength; i++) {
-				printf("%02x-", inputBuffer[foundOffset + i]);
+				printf("%02x-", inputArray[foundOffset + i]);
 			}
 			printf("\n");
 #endif
@@ -192,10 +192,10 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 		}
 		else {
 #ifdef LOGGING
-			printf("  %08x  %08x                          %02x\n", outputOffset + frameLength, inputOffset - 18, (int)(inputBuffer[inputOffset]));
+			printf("  %08x  %08x                          %02x\n", outputOffset + frameLength, inputOffset - 18, (int)(inputArray[inputOffset]));
 #endif
 			frame[0] |= 0x80;
-			frame[frameLength++] = inputBuffer[inputOffset++];
+			frame[frameLength++] = inputArray[inputOffset++];
 		}
 		bitCount++;
 		if (bitCount == 8) {
@@ -221,7 +221,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 			}
 			printf("\n");
 #endif
-			memcpy(workingBuffer.data() + outputOffset, frame, frameLength);
+			memcpy(workingArray + outputOffset, frame, frameLength);
 			outputOffset += frameLength;
 			bitCount = 0;
 			frameLength = 1;
@@ -254,7 +254,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 		}
 		printf("\n");
 #endif
-		memcpy(workingBuffer.data() + outputOffset, frame, frameLength);
+		memcpy(workingArray + outputOffset, frame, frameLength);
 		outputOffset += frameLength;
 	}
 	std::vector<char> outputBuffer(outputOffset);
@@ -294,16 +294,16 @@ void DatFile::Add(const char *fileName, std::vector<char> &inputBuffer, bool com
 	DatFileEntry entry;
 	strncpy_s(entry.Header.FileName, 13, fileName, 12);
 	entry.Header.FileName[12] = '\0';
-	entry.Header.UncompressedSize = inputBuffer.size();
+	entry.Header.UncompressedSize = (uint32_t)(inputBuffer.size());
 	if (compress) {
 		Compress(inputBuffer);
 	}
-	entry.Header.CompressedSize = inputBuffer.size();
+	entry.Header.CompressedSize = (uint32_t)(inputBuffer.size());
 	entry.Header.IsNotCompressed = (entry.Header.CompressedSize >= entry.Header.UncompressedSize);
 
 	uint32_t bufferOffset = 0;
 	BinaryIO::WriteUInt16(fileBuffer, bufferOffset, ++entryCount);
-	bufferOffset = fileBuffer.size();
+	bufferOffset = (uint32_t)(fileBuffer.size());
 	fileBuffer.resize(bufferOffset + sizeof(DatFileHeader) + entry.Header.CompressedSize);
 	entry.CompressedBufferOffset = bufferOffset;
 	memcpy(fileBuffer.data() + bufferOffset, &(entry.Header), sizeof(DatFileHeader));
@@ -325,6 +325,7 @@ DatFileHeader *DatFile::Next() {
 	if (++entryIteration < entryCount) {
 		return &entries[entryIteration].Header;
 	}
+	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
 	return NULL;
 }
 
@@ -332,6 +333,7 @@ DatFileHeader *DatFile::Header(uint32_t index) {
 	if (index < entryCount) {
 		return &entries[index].Header;
 	}
+	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
 	return NULL;
 }
 
@@ -340,6 +342,7 @@ bool DatFile::Entry(std::vector<char> &inputBuffer) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
 	}
+	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
 	return false;
 }
 
@@ -348,11 +351,12 @@ bool DatFile::Entry(uint16_t index, std::vector<char> &inputBuffer) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
 	}
+	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
 	return false;
 }
 
 uint32_t DatFile::Size() {
-	return fileBuffer.size();
+	return (uint32_t)(fileBuffer.size());
 }
 
 void DatFile::Buffer(std::vector<char> &inputBuffer) {

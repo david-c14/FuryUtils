@@ -26,7 +26,7 @@ namespace carbon14.FuryUtils
             private readonly DatFile _datFile;
             private readonly UInt32 _index;
 
-            public DatFileEntry(DatFileHeader header, DatFile datFile, UInt32 index)
+            internal DatFileEntry(DatFileHeader header, DatFile datFile, UInt32 index)
             {
                 _header = header;
                 _datFile = datFile;
@@ -41,11 +41,13 @@ namespace carbon14.FuryUtils
 
             public byte[] Buffer()
             {
+                _datFile.CheckDisposed();
                 byte[] buffer = new byte[UncompressedSize];
                 if (DatFile_entry(_datFile.Pointer, _index, buffer, buffer.Length))
                 {
                     return buffer;
                 }
+                FuryException.Throw();
                 return null;
             }
         }
@@ -90,11 +92,19 @@ namespace carbon14.FuryUtils
         public DatFile()
         {
             _datFile = DatFile_createNew();
+            FuryException.Throw();
         }
 
         public DatFile(byte[] buffer)
         {
             _datFile = DatFile_create(buffer, buffer.Length);
+            FuryException.Throw();
+        }
+
+        protected void CheckDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(DatFile));
         }
 
         protected IntPtr Pointer => _datFile;
@@ -102,18 +112,22 @@ namespace carbon14.FuryUtils
         public int EntryCount {
             get
             {
+                CheckDisposed();
                 return DatFile_entryCount(_datFile);
             }
         }
 
         public IEnumerable<DatFileEntry> Entries()
         {
+            CheckDisposed();
             Reset();
             _index = 1;
             DatFileEntry dfe = Next();
             while (dfe != null)
             {
+                FuryException.Throw();
                 yield return dfe;
+                CheckDisposed();
                 _index++;
                 dfe = Next();
             }
@@ -122,6 +136,7 @@ namespace carbon14.FuryUtils
         protected void Reset()
         {
             DatFile_reset(_datFile);
+            FuryException.Throw();
         }
 
         protected DatFileEntry Next()
@@ -131,32 +146,39 @@ namespace carbon14.FuryUtils
             {
                 return new DatFileEntry(header, this, _index);
             }
+            FuryException.Throw();
             return null;
         }
 
         public DatFileEntry Header(int index)
         {
+            CheckDisposed();
             DatFileHeader header = new DatFileHeader();
             if (DatFile_header(_datFile, (UInt32)index, ref header))
             {
                 return new DatFileEntry(header, this, (UInt32)index);
             }
+            FuryException.Throw();
             return null;
         }
 
         public void Add(string fileName, byte[] buffer, bool compress)
         {
+            CheckDisposed();
             byte[] fileNameBuffer = Encoding.ASCII.GetBytes(fileName);
             DatFile_add(_datFile, fileNameBuffer, buffer, buffer.Length, compress);
+            FuryException.Throw();
         }
 
         public byte[] Buffer()
         {
+            CheckDisposed();
             byte[] buffer = new byte[DatFile_size(_datFile)];
             if (DatFile_buffer(_datFile, buffer, buffer.Length))
             {
                 return buffer;
             }
+            FuryException.Throw();
             return null;
         }
 

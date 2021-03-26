@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "header_Exceptions.hpp"
 
 #ifndef APIEXPORT
 #define APIEXPORT

@@ -4,6 +4,7 @@
 #include <filesystem>
 #include "../classes/class_BinaryIO.cpp"
 #include "../classes/class_DatFile.cpp"
+#include "../classes/module_Exceptions.cpp"
 
 int Usage(char *arg0) {
 	printf("%s usage:\n\n", arg0);

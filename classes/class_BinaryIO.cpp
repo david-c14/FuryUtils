@@ -1,10 +1,11 @@
 #include "header_BinaryIO.hpp"
+#include "header_Exceptions.hpp"
 
 namespace BinaryIO {
 
 	void CheckSpace(std::vector<char> &buffer, uint32_t bufferOffset, uint32_t required) {
 		if ((bufferOffset + required) > buffer.size()) {
-			throw "Buffer overflow";
+			Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
 		}
 		return;
 	}

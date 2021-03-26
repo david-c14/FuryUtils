@@ -15,7 +15,7 @@ namespace TestPlatform
         private void Button1_Click(object sender, EventArgs e)
         {
             byte[] buffer;
-            using (FileStream fs = new FileStream("LANG.DAT", FileMode.Open))
+            using (FileStream fs = new FileStream("PASSW.DTA", FileMode.Open))
             {
                 buffer = new byte[fs.Length];
                 fs.Read(buffer, 0, buffer.Length);
