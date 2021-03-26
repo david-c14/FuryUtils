@@ -1,3 +1,3 @@
 # Command Line Utilities
 
-[DatFile](DatFile.md)
+[DatFile](DatFile.md) for packing and unpacking datfiles
