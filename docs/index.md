@@ -1,4 +1,4 @@
-# File formats
+# [File formats](formats/index.md)
 
 [`*.DAT`](formats/datfile.md) Compressed archives `LANG.DAT` and `INTRO.DAT`
 
