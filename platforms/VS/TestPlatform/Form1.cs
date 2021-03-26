@@ -21,8 +21,8 @@ namespace TestPlatform
                 fs.Read(buffer, 0, buffer.Length);
             }
             DatFile df = new DatFile(buffer);
-            MessageBox.Show(df.EntryCount.ToString());
-            foreach (DatFile.DatFileEntry dfe in df.Entries())
+            MessageBox.Show(df.Count.ToString());
+            foreach (DatFile.DatFileItem dfe in df.Items())
             {
                 MessageBox.Show(dfe.FileName);
                 if (dfe.FileName == "PASSW.DTA")
@@ -52,8 +52,8 @@ namespace TestPlatform
             df.Add("PASSW2.DTA", buffer, true);
             buffer = df.Buffer();
 
-            MessageBox.Show(df.EntryCount.ToString());
-            foreach(DatFile.DatFileEntry dfe in df.Entries())
+            MessageBox.Show(df.Count.ToString());
+            foreach(DatFile.DatFileItem dfe in df.Items())
             {
                 MessageBox.Show(dfe.FileName);
             }

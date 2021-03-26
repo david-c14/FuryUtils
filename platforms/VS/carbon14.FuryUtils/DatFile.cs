@@ -8,7 +8,7 @@ namespace carbon14.FuryUtils
     public class DatFile : IDisposable
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        public struct DatFileHeader
+        internal struct DatFileHeader
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 13)]
             public char[] FileName;
@@ -20,13 +20,13 @@ namespace carbon14.FuryUtils
             public bool IsNotCompressed;
         }
 
-        public class DatFileEntry
+        public class DatFileItem
         {
             private DatFileHeader _header;
             private readonly DatFile _datFile;
             private readonly UInt32 _index;
 
-            internal DatFileEntry(DatFileHeader header, DatFile datFile, UInt32 index)
+            internal DatFileItem(DatFileHeader header, DatFile datFile, UInt32 index)
             {
                 _header = header;
                 _datFile = datFile;
@@ -109,7 +109,7 @@ namespace carbon14.FuryUtils
 
         protected IntPtr Pointer => _datFile;
 
-        public int EntryCount {
+        public int Count {
             get
             {
                 CheckDisposed();
@@ -117,12 +117,12 @@ namespace carbon14.FuryUtils
             }
         }
 
-        public IEnumerable<DatFileEntry> Entries()
+        public IEnumerable<DatFileItem> Items()
         {
             CheckDisposed();
             Reset();
             _index = 1;
-            DatFileEntry dfe = Next();
+            DatFileItem dfe = Next();
             while (dfe != null)
             {
                 FuryException.Throw();
@@ -139,24 +139,24 @@ namespace carbon14.FuryUtils
             FuryException.Throw();
         }
 
-        protected DatFileEntry Next()
+        protected DatFileItem Next()
         {
             DatFileHeader header = new DatFileHeader();
             if (DatFile_next(_datFile, ref header))
             {
-                return new DatFileEntry(header, this, _index);
+                return new DatFileItem(header, this, _index);
             }
             FuryException.Throw();
             return null;
         }
 
-        public DatFileEntry Header(int index)
+        public DatFileItem Item(int index)
         {
             CheckDisposed();
             DatFileHeader header = new DatFileHeader();
             if (DatFile_header(_datFile, (UInt32)index, ref header))
             {
-                return new DatFileEntry(header, this, (UInt32)index);
+                return new DatFileItem(header, this, (UInt32)index);
             }
             FuryException.Throw();
             return null;
