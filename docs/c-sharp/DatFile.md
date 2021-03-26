@@ -1,18 +1,18 @@
 # DatFile
 
-a class to handle [datfiles](../formats/datfile.md)
+a class to handle [datfile](../formats/datfile.md) archives
 
 ## implements
 ```System.IDisposable```
 
 ## constructors
     
-[`DatFile()`](DatFile.DatFile.md) Construct an empty DatFile archive for writing.  
-[`DatFile(byte[])`](DatFile.DatFile.md) Construct a DatFile archive for reading.  
+[`DatFile()`](DatFile.DatFile.md) Construct an empty archive for writing.  
+[`DatFile(byte[])`](DatFile.DatFile.md) Construct a archive for reading.  
 
 ## properties
 
-[`int Count`](DatFile.Count.md) The number of content files in the DatFile archive.  
+[`int Count`](DatFile.Count.md) The number of content files in the archive.  
 
 ## methods
 
