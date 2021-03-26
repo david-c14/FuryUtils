@@ -3,7 +3,7 @@
 a class to handle [datfiles](../formats/datfile.md)
 
 ## implements
-    System.IDisposable
+```System.IDisposable```
 
 ## constructors
     
