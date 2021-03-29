@@ -5,10 +5,10 @@ using System.Text;
 
 namespace carbon14.FuryUtils
 {
-    public class DatFile : IDisposable
+    public class Dat : IDisposable
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct DatFileHeader
+        internal struct DatHeader
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 13)]
             public char[] FileName;
@@ -20,16 +20,16 @@ namespace carbon14.FuryUtils
             public bool IsNotCompressed;
         }
 
-        public class DatFileItem
+        public class DatItem
         {
-            private DatFileHeader _header;
-            private readonly DatFile _datFile;
+            private DatHeader _header;
+            private readonly Dat _dat;
             private readonly UInt32 _index;
 
-            internal DatFileItem(DatFileHeader header, DatFile datFile, UInt32 index)
+            internal DatItem(DatHeader header, Dat dat, UInt32 index)
             {
                 _header = header;
-                _datFile = datFile;
+                _dat = dat;
                 _index = index;
             }
 
@@ -41,9 +41,9 @@ namespace carbon14.FuryUtils
 
             public byte[] Buffer()
             {
-                _datFile.CheckDisposed();
+                _dat.CheckDisposed();
                 byte[] buffer = new byte[UncompressedSize];
-                if (DatFile_entry(_datFile.Pointer, _index, buffer, buffer.Length))
+                if (Dat_entry(_dat.Pointer, _index, buffer, buffer.Length))
                 {
                     return buffer;
                 }
@@ -53,76 +53,76 @@ namespace carbon14.FuryUtils
         }
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr DatFile_createNew();
+        private static extern IntPtr Dat_createNew();
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr DatFile_create([MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size);
+        private static extern IntPtr Dat_create([MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void DatFile_destroy(IntPtr datFile);
+        private static extern void Dat_destroy(IntPtr datFile);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int DatFile_entryCount(IntPtr datFile);
+        private static extern int Dat_entryCount(IntPtr datFile);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void DatFile_reset(IntPtr datFile);
+        private static extern void Dat_reset(IntPtr datFile);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool DatFile_next(IntPtr datFile, ref DatFileHeader header);
+        private static extern bool Dat_next(IntPtr datFile, ref DatHeader header);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool DatFile_header(IntPtr datFile, UInt32 index, ref DatFileHeader header);
+        private static extern bool Dat_header(IntPtr datFile, UInt32 index, ref DatHeader header);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool DatFile_entry(IntPtr datFile, UInt32 index, [MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size);
+        private static extern bool Dat_entry(IntPtr datFile, UInt32 index, [MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void DatFile_add(IntPtr datFile, [MarshalAs(UnmanagedType.LPArray)] byte[] fileName, [MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size, bool compress);
+        private static extern void Dat_add(IntPtr datFile, [MarshalAs(UnmanagedType.LPArray)] byte[] fileName, [MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size, bool compress);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int DatFile_size(IntPtr datFile);
+        private static extern int Dat_size(IntPtr datFile);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool DatFile_buffer(IntPtr datFile, [MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size);
+        private static extern bool Dat_buffer(IntPtr datFile, [MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int size);
 
-        readonly private IntPtr _datFile;
+        readonly private IntPtr _dat;
         private bool _disposed = false;
         private UInt32 _index = 0;
 
-        public DatFile()
+        public Dat()
         {
-            _datFile = DatFile_createNew();
+            _dat = Dat_createNew();
             FuryException.Throw();
         }
 
-        public DatFile(byte[] buffer)
+        public Dat(byte[] buffer)
         {
-            _datFile = DatFile_create(buffer, buffer.Length);
+            _dat = Dat_create(buffer, buffer.Length);
             FuryException.Throw();
         }
 
         protected void CheckDisposed()
         {
             if (_disposed)
-                throw new ObjectDisposedException(nameof(DatFile));
+                throw new ObjectDisposedException(nameof(Dat));
         }
 
-        protected IntPtr Pointer => _datFile;
+        protected IntPtr Pointer => _dat;
 
         public int Count {
             get
             {
                 CheckDisposed();
-                return DatFile_entryCount(_datFile);
+                return Dat_entryCount(_dat);
             }
         }
 
-        public IEnumerable<DatFileItem> Items()
+        public IEnumerable<DatItem> Items()
         {
             CheckDisposed();
             Reset();
             _index = 1;
-            DatFileItem dfe = Next();
+            DatItem dfe = Next();
             while (dfe != null)
             {
                 FuryException.Throw();
@@ -135,28 +135,28 @@ namespace carbon14.FuryUtils
 
         protected void Reset()
         {
-            DatFile_reset(_datFile);
+            Dat_reset(_dat);
             FuryException.Throw();
         }
 
-        protected DatFileItem Next()
+        protected DatItem Next()
         {
-            DatFileHeader header = new DatFileHeader();
-            if (DatFile_next(_datFile, ref header))
+            DatHeader header = new DatHeader();
+            if (Dat_next(_dat, ref header))
             {
-                return new DatFileItem(header, this, _index);
+                return new DatItem(header, this, _index);
             }
             FuryException.Throw();
             return null;
         }
 
-        public DatFileItem Item(int index)
+        public DatItem Item(int index)
         {
             CheckDisposed();
-            DatFileHeader header = new DatFileHeader();
-            if (DatFile_header(_datFile, (UInt32)index, ref header))
+            DatHeader header = new DatHeader();
+            if (Dat_header(_dat, (UInt32)index, ref header))
             {
-                return new DatFileItem(header, this, (UInt32)index);
+                return new DatItem(header, this, (UInt32)index);
             }
             FuryException.Throw();
             return null;
@@ -166,15 +166,15 @@ namespace carbon14.FuryUtils
         {
             CheckDisposed();
             byte[] fileNameBuffer = Encoding.ASCII.GetBytes(fileName);
-            DatFile_add(_datFile, fileNameBuffer, buffer, buffer.Length, compress);
+            Dat_add(_dat, fileNameBuffer, buffer, buffer.Length, compress);
             FuryException.Throw();
         }
 
         public byte[] Buffer()
         {
             CheckDisposed();
-            byte[] buffer = new byte[DatFile_size(_datFile)];
-            if (DatFile_buffer(_datFile, buffer, buffer.Length))
+            byte[] buffer = new byte[Dat_size(_dat)];
+            if (Dat_buffer(_dat, buffer, buffer.Length))
             {
                 return buffer;
             }
@@ -200,7 +200,7 @@ namespace carbon14.FuryUtils
                 // free any managed objects here
             }
 
-            DatFile_destroy(_datFile);
+            Dat_destroy(_dat);
 
             _disposed = true;
         }

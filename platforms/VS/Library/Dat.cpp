@@ -1,12 +1,12 @@
-#include "../../../classes/header_BinaryIO.hpp"
+#include "../../../headers/header_BinaryIO.hpp"
 #define APIEXPORT __declspec(dllexport)
-#include "../../../classes/class_DatFile.cpp"
+#include "../../../classes/class_Dat.cpp"
 
 extern "C" {
-	APIEXPORT DatFile * __cdecl DatFile_createNew() {
+	APIEXPORT Dat * __cdecl Dat_createNew() {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			return new DatFile();
+			return new Dat();
 		}
 		catch (...) {
 			Exceptions::HANDLE();
@@ -14,11 +14,11 @@ extern "C" {
 		}
 	}
 
-	APIEXPORT DatFile * __cdecl DatFile_create(char *buffer, int size) {
+	APIEXPORT Dat * __cdecl Dat_create(char *buffer, int size) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
 			std::vector<char> vBuffer(buffer, buffer + size);
-			return new DatFile(vBuffer);
+			return new Dat(vBuffer);
 		}
 		catch (...) {
 			Exceptions::HANDLE();
@@ -26,20 +26,20 @@ extern "C" {
 		}
 	}
 
-	APIEXPORT void __cdecl DatFile_destroy(DatFile *datFile) {
+	APIEXPORT void __cdecl Dat_destroy(Dat *dat) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			delete datFile;
+			delete dat;
 		}
 		catch (...) {
 			Exceptions::HANDLE();
 		}
 	}
 
-	APIEXPORT int __cdecl DatFile_entryCount(DatFile *datFile) {
+	APIEXPORT int __cdecl Dat_entryCount(Dat *dat) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			return datFile->EntryCount();
+			return dat->EntryCount();
 		}
 		catch (...) {
 			Exceptions::HANDLE();
@@ -47,22 +47,22 @@ extern "C" {
 		}
 	}
 
-	APIEXPORT void __cdecl DatFile_reset(DatFile *datFile) {
+	APIEXPORT void __cdecl Dat_reset(Dat *dat) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			datFile->Reset();
+			dat->Reset();
 		}
 		catch (...) {
 			Exceptions::HANDLE();
 		}
 	}
 
-	APIEXPORT bool __cdecl DatFile_next(DatFile *datFile, DatFileHeader *header) {
+	APIEXPORT bool __cdecl Dat_next(Dat *dat, DatHeader *header) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			DatFileHeader *next = datFile->Next();
+			DatHeader *next = dat->Next();
 			if (next) {
-				memcpy(header, next, sizeof(DatFileHeader));
+				memcpy(header, next, sizeof(DatHeader));
 				return true;
 			}
 		}
@@ -72,12 +72,12 @@ extern "C" {
 		return false;
 	}
 
-	APIEXPORT bool __cdecl DatFile_header(DatFile *datFile, uint32_t index, DatFileHeader *header) {
+	APIEXPORT bool __cdecl Dat_header(Dat *dat, uint32_t index, DatHeader *header) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			DatFileHeader *item = datFile->Header(index);
+			DatHeader *item = dat->Header(index);
 			if (item) {
-				memcpy(header, item, sizeof(DatFileHeader));
+				memcpy(header, item, sizeof(DatHeader));
 				return true;
 			}
 		}
@@ -87,16 +87,16 @@ extern "C" {
 		return false;
 	}
 
-	APIEXPORT bool __cdecl DatFile_entry(DatFile *datFile, uint32_t index, char *buffer, uint32_t size) {
+	APIEXPORT bool __cdecl Dat_entry(Dat *dat, uint32_t index, char *buffer, uint32_t size) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			DatFileHeader *item = datFile->Header(index);
+			DatHeader *item = dat->Header(index);
 			if (item->UncompressedSize > size) {
 				ErrorCode = Exceptions::Codes::BUFFER_OVERFLOW;
 				return false;
 			}
 			std::vector<char> internal_buffer(item->UncompressedSize);
-			datFile->Entry(index, internal_buffer);
+			dat->Entry(index, internal_buffer);
 			memcpy(buffer, internal_buffer.data(), item->UncompressedSize);
 		}
 		catch (...) {
@@ -106,22 +106,22 @@ extern "C" {
 		return true;
 	}
 
-	APIEXPORT void __cdecl DatFile_add(DatFile *datFile, char *fileName, char *buffer, uint32_t size, bool compress) {
+	APIEXPORT void __cdecl Dat_add(Dat *dat, char *fileName, char *buffer, uint32_t size, bool compress) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
 			std::vector<char> internal_buffer(size);
 			memcpy(internal_buffer.data(), buffer, size);
-			datFile->Add(fileName, internal_buffer, compress);
+			dat->Add(fileName, internal_buffer, compress);
 		}
 		catch (...) {
 			Exceptions::HANDLE();
 		}
 	}
 
-	APIEXPORT uint32_t __cdecl DatFile_size(DatFile *datFile) {
+	APIEXPORT uint32_t __cdecl Dat_size(Dat *dat) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			return datFile->Size();
+			return dat->Size();
 		}
 		catch (...) {
 			Exceptions::HANDLE();
@@ -129,11 +129,11 @@ extern "C" {
 		return 0;
 	}
 
-	APIEXPORT bool __cdecl DatFile_buffer(DatFile *datFile, char *buffer, uint32_t size) {
+	APIEXPORT bool __cdecl Dat_buffer(Dat *dat, char *buffer, uint32_t size) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
 			std::vector<char> internal_buffer;
-			datFile->Buffer(internal_buffer);
+			dat->Buffer(internal_buffer);
 			if (internal_buffer.size() > size) {
 				ErrorCode = Exceptions::Codes::BUFFER_OVERFLOW;
 				return false;

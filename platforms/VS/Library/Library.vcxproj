@@ -168,7 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryIO.cpp" />
-    <ClCompile Include="DatFile.cpp" />
+    <ClCompile Include="Dat.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Exceptions.cpp" />
   </ItemGroup>

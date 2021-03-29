@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <filesystem>
 #include "../classes/class_BinaryIO.cpp"
-#include "../classes/class_DatFile.cpp"
-#include "../classes/module_Exceptions.cpp"
+#include "../classes/class_Dat.cpp"
+#include "../modules/module_Exceptions.cpp"
 
 int Usage(char *arg0) {
 	printf("%s usage:\n\n", arg0);
@@ -36,8 +36,8 @@ int List(int argc, char* argv[]) {
 		std::vector<char> buffer((uint32_t)size);
 		if (file.read(buffer.data(), size))
 		{
-			DatFile df(buffer);
-			DatFileHeader *dfh;
+			Dat df(buffer);
+			DatHeader *dfh;
 			printf("%s: Contents of %s\n\n", argv[0], argv[2]);
 			printf("  Filename     Compressed   Uncompressed\n");
 			printf("------------  ------------  ------------\n");
@@ -74,8 +74,8 @@ int Brief(int argc, char* argv[]) {
 		std::vector<char> buffer((uint32_t)size);
 		if (file.read(buffer.data(), size))
 		{
-			DatFile df(buffer);
-			DatFileHeader *dfh;
+			Dat df(buffer);
+			DatHeader *dfh;
 			while (dfh = df.Next()) {
 				printf("%s ", dfh->FileName);
 			}
@@ -109,8 +109,8 @@ int Extract(int argc, char* argv[]) {
 		std::vector<char> buffer((uint32_t)size);
 		if (file.read(buffer.data(), size))
 		{
-			DatFile df(buffer);
-			DatFileHeader *dfh;
+			Dat df(buffer);
+			DatHeader *dfh;
 #ifndef LOGGING
 			printf("%s: Extracting \"%s\" from \"%s\"\n\n", argv[0], argv[3], argv[2]);
 #endif
@@ -169,8 +169,8 @@ int ExtractAll(int argc, char* argv[]) {
 		std::vector<char> buffer((uint32_t)size);
 		if (file.read(buffer.data(), size))
 		{
-			DatFile df(buffer);
-			DatFileHeader *dfh;
+			Dat df(buffer);
+			DatHeader *dfh;
 #ifndef LOGGING
 			printf("%s: Extracting all entries from \"%s\"\n\n", argv[0], argv[2]);
 #endif
@@ -226,7 +226,7 @@ int Create(int argc, char* argv[], bool compress) {
 		return Usage(argv[0]);
 	}
 
-	DatFile df;
+	Dat df;
 
 #ifndef LOGGING
 	printf("%s: creating %s archive %s\n\n", argv[0], compress?"compressed":"uncompressed", argv[2]);
@@ -247,7 +247,7 @@ int Create(int argc, char* argv[], bool compress) {
 		{
 			df.Add(filename.c_str(), buffer, compress);
 #ifndef LOGGING
-			DatFileHeader *dfh = df.Header(df.EntryCount() - 1);
+			DatHeader *dfh = df.Header(df.EntryCount() - 1);
 			if (dfh->IsNotCompressed) {
 				printf("%12s\tUncompressed\t%d\n", dfh->FileName, dfh->UncompressedSize);
 			}

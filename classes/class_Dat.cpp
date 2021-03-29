@@ -1,6 +1,6 @@
-#include "header_DatFile.hpp"
+#include "../headers/header_Dat.hpp"
 
-void DatFile::InternalEntry(std::vector<char> &inputBuffer, uint16_t index) {
+void Dat::InternalEntry(std::vector<char> &inputBuffer, uint16_t index) {
 	uint32_t start = entries[index].CompressedBufferOffset;
 	uint32_t end = start + entries[index].Header.CompressedSize;
 	std::vector<char> copyBuffer(fileBuffer.begin() + start, fileBuffer.begin() + end);
@@ -10,7 +10,7 @@ void DatFile::InternalEntry(std::vector<char> &inputBuffer, uint16_t index) {
 	copyBuffer.swap(inputBuffer);
 }
 
-void DatFile::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSize) {
+void Dat::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSize) {
 	std::vector<char> outputBuffer(uncompressedSize);
 	uint32_t inputOffset = 0;
 	uint32_t outputOffset = 0;
@@ -209,7 +209,7 @@ public:
 };
 
 
-void DatFile::Compress(std::vector<char> &originalBuffer) {
+void Dat::Compress(std::vector<char> &originalBuffer) {
 	uint32_t originalLength = (uint32_t)(originalBuffer.size());
 	uint32_t inputLength = originalLength + 18;
 	std::vector<char> inputBuffer(inputLength);
@@ -346,7 +346,7 @@ void DatFile::Compress(std::vector<char> &originalBuffer) {
 	return;
 }
 
-DatFile::DatFile(std::vector<char> &inputBuffer) {
+Dat::Dat(std::vector<char> &inputBuffer) {
 	fileBuffer.clear();
 	fileBuffer.swap(inputBuffer);
 	uint32_t bufferOffset = 0;
@@ -354,7 +354,7 @@ DatFile::DatFile(std::vector<char> &inputBuffer) {
 	entryCount = BinaryIO::ReadUInt16(fileBuffer, bufferOffset);
 	entries.resize(entryCount);
 	for (unsigned int i = 0; i < entryCount; i++) {
-		BinaryIO::CheckSpace(fileBuffer, bufferOffset, sizeof(DatFileHeader));
+		BinaryIO::CheckSpace(fileBuffer, bufferOffset, sizeof(DatHeader));
 		strncpy_s(entries[i].Header.FileName, 13, &(fileBuffer[bufferOffset]), 13);
 		entries[i].Header.FileName[12] = '\0';
 		bufferOffset += 13;
@@ -367,14 +367,14 @@ DatFile::DatFile(std::vector<char> &inputBuffer) {
 	}
 }
 
-DatFile::DatFile() {
+Dat::Dat() {
 	fileBuffer.resize(2);
 	uint32_t bufferOffset = 0;
 	BinaryIO::WriteUInt16(fileBuffer, bufferOffset, entryCount);
 }
 
-void DatFile::Add(const char *fileName, std::vector<char> &inputBuffer, bool compress) {
-	DatFileEntry entry;
+void Dat::Add(const char *fileName, std::vector<char> &inputBuffer, bool compress) {
+	DatEntry entry;
 	strncpy_s(entry.Header.FileName, 13, fileName, 12);
 	entry.Header.FileName[12] = '\0';
 	entry.Header.UncompressedSize = (uint32_t)(inputBuffer.size());
@@ -387,24 +387,24 @@ void DatFile::Add(const char *fileName, std::vector<char> &inputBuffer, bool com
 	uint32_t bufferOffset = 0;
 	BinaryIO::WriteUInt16(fileBuffer, bufferOffset, ++entryCount);
 	bufferOffset = (uint32_t)(fileBuffer.size());
-	fileBuffer.resize(bufferOffset + sizeof(DatFileHeader) + entry.Header.CompressedSize);
+	fileBuffer.resize(bufferOffset + sizeof(DatHeader) + entry.Header.CompressedSize);
 	entry.CompressedBufferOffset = bufferOffset;
-	memcpy(fileBuffer.data() + bufferOffset, &(entry.Header), sizeof(DatFileHeader));
-	bufferOffset += sizeof(DatFileHeader);
+	memcpy(fileBuffer.data() + bufferOffset, &(entry.Header), sizeof(DatHeader));
+	bufferOffset += sizeof(DatHeader);
 	memcpy(fileBuffer.data() + bufferOffset, inputBuffer.data(), entry.Header.CompressedSize);
 
 	entries.push_back(entry);
 }
 
-uint16_t DatFile::EntryCount() {
+uint16_t Dat::EntryCount() {
 	return entryCount;
 }
 
-void DatFile::Reset() {
+void Dat::Reset() {
 	entryIteration = -1;
 }
 
-DatFileHeader *DatFile::Next() {
+DatHeader *Dat::Next() {
 	if (++entryIteration < entryCount) {
 		return &entries[entryIteration].Header;
 	}
@@ -412,7 +412,7 @@ DatFileHeader *DatFile::Next() {
 	return NULL;
 }
 
-DatFileHeader *DatFile::Header(uint32_t index) {
+DatHeader *Dat::Header(uint32_t index) {
 	if (index < entryCount) {
 		return &entries[index].Header;
 	}
@@ -420,7 +420,7 @@ DatFileHeader *DatFile::Header(uint32_t index) {
 	return NULL;
 }
 
-bool DatFile::Entry(std::vector<char> &inputBuffer) {
+bool Dat::Entry(std::vector<char> &inputBuffer) {
 	if (entryIteration < entryCount) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
@@ -429,7 +429,7 @@ bool DatFile::Entry(std::vector<char> &inputBuffer) {
 	return false;
 }
 
-bool DatFile::Entry(uint16_t index, std::vector<char> &inputBuffer) {
+bool Dat::Entry(uint16_t index, std::vector<char> &inputBuffer) {
 	if (index < entryCount) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
@@ -438,11 +438,11 @@ bool DatFile::Entry(uint16_t index, std::vector<char> &inputBuffer) {
 	return false;
 }
 
-uint32_t DatFile::Size() {
+uint32_t Dat::Size() {
 	return (uint32_t)(fileBuffer.size());
 }
 
-void DatFile::Buffer(std::vector<char> &inputBuffer) {
+void Dat::Buffer(std::vector<char> &inputBuffer) {
 	std::vector<char> copyBuffer(fileBuffer);
 	copyBuffer.swap(inputBuffer);
 }

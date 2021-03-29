@@ -20,9 +20,9 @@ namespace TestPlatform
                 buffer = new byte[fs.Length];
                 fs.Read(buffer, 0, buffer.Length);
             }
-            DatFile df = new DatFile(buffer);
+            Dat df = new Dat(buffer);
             MessageBox.Show(df.Count.ToString());
-            foreach (DatFile.DatFileItem dfe in df.Items())
+            foreach (Dat.DatItem dfe in df.Items())
             {
                 MessageBox.Show(dfe.FileName);
                 if (dfe.FileName == "PASSW.DTA")
@@ -36,7 +36,7 @@ namespace TestPlatform
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            DatFile df = new DatFile();
+            Dat df = new Dat();
             byte[] buffer;
             using (FileStream fs = new FileStream("LANG.TXT", FileMode.Open))
             {
@@ -53,7 +53,7 @@ namespace TestPlatform
             buffer = df.Buffer();
 
             MessageBox.Show(df.Count.ToString());
-            foreach(DatFile.DatFileItem dfe in df.Items())
+            foreach(Dat.DatItem dfe in df.Items())
             {
                 MessageBox.Show(dfe.FileName);
             }
