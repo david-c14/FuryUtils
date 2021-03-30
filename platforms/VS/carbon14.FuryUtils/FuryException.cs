@@ -5,8 +5,6 @@ namespace carbon14.FuryUtils
 {
     public class FuryException : Exception
     {
-        private ErrorCodes _errorCode;
-
         public FuryException(ErrorCodes errorCode) : this(errorCode, ExceptionMessages.Message(errorCode), null)
         {
         }
@@ -17,10 +15,10 @@ namespace carbon14.FuryUtils
 
         public FuryException(ErrorCodes errorCode, string message, Exception innerException): base(message, innerException)
         {
-            _errorCode = errorCode;
+            ErrorCode = errorCode;
         }
 
-        public ErrorCodes ErrorCode { get => _errorCode; }
+        public ErrorCodes ErrorCode { get; }
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int GetExceptionCode();
