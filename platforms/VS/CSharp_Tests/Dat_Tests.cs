@@ -1,15 +1,14 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using carbon14.FuryUtils;
 using System.IO;
 
 namespace CSharp_Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class Dat_Tests
     {
         [TestMethod]
-        public void TestMethod1()
+        public void Given_a_valid_dat_file_When_a_DAT_object_is_created_Then_the_count_property_returns_a_count_of_content_files()
         {
             byte[] buffer;
             using (FileStream fs = new FileStream("LANG.DAT", FileMode.Open))
