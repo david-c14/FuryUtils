@@ -9,7 +9,8 @@
             BUFFER_OVERFLOW,
             INDEX_OUT_OF_RANGE,
             NOT_IMPLEMENTED,
-            UNKNOWN_ERROR
+            UNKNOWN_ERROR,
+            IO_ERROR
         };
     }
 }
