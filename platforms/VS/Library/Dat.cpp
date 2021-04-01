@@ -14,10 +14,10 @@ extern "C" {
 		}
 	}
 
-	APIEXPORT Dat * __cdecl Dat_create(char *buffer, int size) {
+	APIEXPORT Dat * __cdecl Dat_create(uint8_t *buffer, int size) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			std::vector<char> vBuffer(buffer, buffer + size);
+			std::vector<uint8_t> vBuffer(buffer, buffer + size);
 			return new Dat(vBuffer);
 		}
 		catch (...) {
@@ -87,7 +87,7 @@ extern "C" {
 		return false;
 	}
 
-	APIEXPORT bool __cdecl Dat_entry(Dat *dat, uint32_t index, char *buffer, uint32_t size) {
+	APIEXPORT bool __cdecl Dat_entry(Dat *dat, uint32_t index, uint8_t *buffer, uint32_t size) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
 			DatHeader *item = dat->Header(index);
@@ -95,7 +95,7 @@ extern "C" {
 				ErrorCode = Exceptions::Codes::BUFFER_OVERFLOW;
 				return false;
 			}
-			std::vector<char> internal_buffer(item->UncompressedSize);
+			std::vector<uint8_t> internal_buffer(item->UncompressedSize);
 			dat->Entry(index, internal_buffer);
 			memcpy(buffer, internal_buffer.data(), item->UncompressedSize);
 		}
@@ -106,10 +106,10 @@ extern "C" {
 		return true;
 	}
 
-	APIEXPORT void __cdecl Dat_add(Dat *dat, char *fileName, char *buffer, uint32_t size, bool compress) {
+	APIEXPORT void __cdecl Dat_add(Dat *dat, char *fileName, uint8_t *buffer, uint32_t size, bool compress) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			std::vector<char> internal_buffer(size);
+			std::vector<uint8_t> internal_buffer(size);
 			memcpy(internal_buffer.data(), buffer, size);
 			dat->Add(fileName, internal_buffer, compress);
 		}
@@ -129,10 +129,10 @@ extern "C" {
 		return 0;
 	}
 
-	APIEXPORT bool __cdecl Dat_buffer(Dat *dat, char *buffer, uint32_t size) {
+	APIEXPORT bool __cdecl Dat_buffer(Dat *dat, uint8_t *buffer, uint32_t size) {
 		ErrorCode = Exceptions::Codes::NO_ERROR;
 		try {
-			std::vector<char> internal_buffer;
+			std::vector<uint8_t> internal_buffer;
 			dat->Buffer(internal_buffer);
 			if (internal_buffer.size() > size) {
 				ErrorCode = Exceptions::Codes::BUFFER_OVERFLOW;

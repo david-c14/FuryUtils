@@ -33,8 +33,8 @@ int List(int argc, char* argv[]) {
 		std::streamsize size = file.tellg();
 		file.seekg(0, std::ios::beg);
 
-		std::vector<char> buffer((uint32_t)size);
-		if (file.read(buffer.data(), size))
+		std::vector<uint8_t> buffer((uint32_t)size);
+		if (file.read((char *)(buffer.data()), size))
 		{
 			Dat df(buffer);
 			DatHeader *dfh;
@@ -71,8 +71,8 @@ int Brief(int argc, char* argv[]) {
 		std::streamsize size = file.tellg();
 		file.seekg(0, std::ios::beg);
 
-		std::vector<char> buffer((uint32_t)size);
-		if (file.read(buffer.data(), size))
+		std::vector<uint8_t> buffer((uint32_t)size);
+		if (file.read((char *)(buffer.data()), size))
 		{
 			Dat df(buffer);
 			DatHeader *dfh;
@@ -106,8 +106,8 @@ int Extract(int argc, char* argv[]) {
 		std::streamsize size = file.tellg();
 		file.seekg(0, std::ios::beg);
 
-		std::vector<char> buffer((uint32_t)size);
-		if (file.read(buffer.data(), size))
+		std::vector<uint8_t> buffer((uint32_t)size);
+		if (file.read((char *)(buffer.data()), size))
 		{
 			Dat df(buffer);
 			DatHeader *dfh;
@@ -126,11 +126,11 @@ int Extract(int argc, char* argv[]) {
 					printf("%12s\tCompressed - %d%%\n", dfh->FileName, (100 * dfh->CompressedSize) / dfh->UncompressedSize);
 				}
 #endif
-				std::vector<char> uncompressedBuffer;
+				std::vector<uint8_t> uncompressedBuffer;
 				df.Entry(uncompressedBuffer);
 				std::ofstream outFile(dfh->FileName, std::ios::binary | std::ios::trunc);
 				if (outFile) {
-					outFile.write(uncompressedBuffer.data(), uncompressedBuffer.size());
+					outFile.write((char *)(uncompressedBuffer.data()), uncompressedBuffer.size());
 				}
 				else {
 					printf("%s Error: Could not write file \"%s\"\n", argv[0], dfh->FileName);
@@ -166,8 +166,8 @@ int ExtractAll(int argc, char* argv[]) {
 		std::streamsize size = file.tellg();
 		file.seekg(0, std::ios::beg);
 
-		std::vector<char> buffer((uint32_t)size);
-		if (file.read(buffer.data(), size))
+		std::vector<uint8_t> buffer((uint32_t)size);
+		if (file.read((char *)(buffer.data()), size))
 		{
 			Dat df(buffer);
 			DatHeader *dfh;
@@ -181,11 +181,11 @@ int ExtractAll(int argc, char* argv[]) {
 				else {
 					printf("%12s\tCompressed - %d%%\t%d\t%d\n", dfh->FileName, (100 * dfh->CompressedSize) / dfh->UncompressedSize, dfh->UncompressedSize, dfh->CompressedSize);
 				}
-				std::vector<char> uncompressedBuffer;
+				std::vector<uint8_t> uncompressedBuffer;
 				df.Entry(uncompressedBuffer);
 				std::ofstream outFile(dfh->FileName, std::ios::binary | std::ios::trunc);
 				if (outFile) {
-					outFile.write(uncompressedBuffer.data(), uncompressedBuffer.size());
+					outFile.write((char *)(uncompressedBuffer.data()), uncompressedBuffer.size());
 				}
 				else {
 					printf("%s Error: Could not write file \"%s\"\n", argv[0], dfh->FileName);
@@ -243,8 +243,8 @@ int Create(int argc, char* argv[], bool compress) {
 			}
 			std::streamsize size = file.tellg();
 			file.seekg(0, std::ios::beg);
-			std::vector<char> buffer((uint32_t)size);
-			if (file.read(buffer.data(), size))
+			std::vector<uint8_t> buffer((uint32_t)size);
+			if (file.read((char *)(buffer.data()), size))
 			{
 				df.Add(filename.c_str(), buffer, compress);
 #ifndef LOGGING
@@ -263,9 +263,9 @@ int Create(int argc, char* argv[], bool compress) {
 		}
 		std::ofstream outFile(argv[2], std::ios::binary | std::ios::trunc);
 		if (outFile) {
-			std::vector<char> buffer;
+			std::vector<uint8_t> buffer;
 			df.Buffer(buffer);
-			outFile.write(buffer.data(), buffer.size());
+			outFile.write((char *)(buffer.data()), buffer.size());
 		}
 		else {
 			printf("%s Error: Could not write output file \"%s\"\n", argv[0], argv[2]);

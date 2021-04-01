@@ -67,26 +67,14 @@ uint32_t Imm::ImmSize() {
 void Imm::ImmBuffer(std::vector<uint8_t> &inputBuffer) {
 	std::vector<uint8_t> outputBuffer(_pixels.size() + 9);
 	uint32_t offset = 0;
-	// Fix when BinaryIO works with UInt8_t instead of char
-	/*
 	BinaryIO::WriteUInt8(outputBuffer, offset, 'L');
 	BinaryIO::WriteUInt8(outputBuffer, offset, 'I');
 	BinaryIO::WriteUInt8(outputBuffer, offset, 'B');
 	BinaryIO::WriteUInt8(outputBuffer, offset, 'N');
 	BinaryIO::WriteUInt16(outputBuffer, offset, _width);
 	BinaryIO::WriteUInt16(outputBuffer, offset, _height);
-	BinaryIO::WriteUInt8(outputBuffer, offset, 0);
-	*/
-	outputBuffer[0] = 'L';
-	outputBuffer[1] = 'I';
-	outputBuffer[2] = 'B';
-	outputBuffer[3] = 'N';
-	outputBuffer[4] = _width & 0xff;
-	outputBuffer[5] = _width >> 8;;
-	outputBuffer[6] = _height & 0xff;
-	outputBuffer[7] = _height >> 8;
-	outputBuffer[8] = ' ';
-	memcpy(outputBuffer.data() + 9, _pixels.data(), _width * _height);
+	BinaryIO::WriteUInt8(outputBuffer, offset, ' ');
+	memcpy(outputBuffer.data() + offset, _pixels.data(), _width * _height);
 	inputBuffer.swap(outputBuffer);
 	return;
 }

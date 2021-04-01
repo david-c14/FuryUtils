@@ -1,17 +1,17 @@
 #include "../headers/header_Dat.hpp"
 
-void Dat::InternalEntry(std::vector<char> &inputBuffer, uint16_t index) {
+void Dat::InternalEntry(std::vector<uint8_t> &inputBuffer, uint16_t index) {
 	uint32_t start = entries[index].CompressedBufferOffset;
 	uint32_t end = start + entries[index].Header.CompressedSize;
-	std::vector<char> copyBuffer(fileBuffer.begin() + start, fileBuffer.begin() + end);
+	std::vector<uint8_t> copyBuffer(fileBuffer.begin() + start, fileBuffer.begin() + end);
 	if (!entries[index].Header.IsNotCompressed) {
 		Uncompress(copyBuffer, entries[index].Header.UncompressedSize);
 	}
 	copyBuffer.swap(inputBuffer);
 }
 
-void Dat::Uncompress(std::vector<char> &inputBuffer, uint32_t uncompressedSize) {
-	std::vector<char> outputBuffer(uncompressedSize);
+void Dat::Uncompress(std::vector<uint8_t> &inputBuffer, uint32_t uncompressedSize) {
+	std::vector<uint8_t> outputBuffer(uncompressedSize);
 	uint32_t inputOffset = 0;
 	uint32_t outputOffset = 0;
 	uint8_t compressionBits;
@@ -209,13 +209,13 @@ public:
 };
 
 
-void Dat::Compress(std::vector<char> &originalBuffer) {
+void Dat::Compress(std::vector<uint8_t> &originalBuffer) {
 	uint32_t originalLength = (uint32_t)(originalBuffer.size());
 	uint32_t inputLength = originalLength + 18;
-	std::vector<char> inputBuffer(inputLength);
-	std::vector<char> workingBuffer(originalLength);
-	char *inputArray = inputBuffer.data();
-	char *workingArray = workingBuffer.data();
+	std::vector<uint8_t> inputBuffer(inputLength);
+	std::vector<uint8_t> workingBuffer(originalLength);
+	uint8_t *inputArray = inputBuffer.data();
+	uint8_t *workingArray = workingBuffer.data();
 	for (unsigned int i = 0; i < 18; i++) {
 		inputArray[i] = ' ';
 	}
@@ -340,13 +340,13 @@ void Dat::Compress(std::vector<char> &originalBuffer) {
 		memcpy(workingArray + outputOffset, frame, frameLength);
 		outputOffset += frameLength;
 	}
-	std::vector<char> outputBuffer(outputOffset);
+	std::vector<uint8_t> outputBuffer(outputOffset);
 	memcpy(outputBuffer.data(), workingBuffer.data(), outputOffset);
 	originalBuffer.swap(outputBuffer);
 	return;
 }
 
-Dat::Dat(std::vector<char> &inputBuffer) {
+Dat::Dat(std::vector<uint8_t> &inputBuffer) {
 	fileBuffer.clear();
 	fileBuffer.swap(inputBuffer);
 	uint32_t bufferOffset = 0;
@@ -355,7 +355,7 @@ Dat::Dat(std::vector<char> &inputBuffer) {
 	entries.resize(entryCount);
 	for (unsigned int i = 0; i < entryCount; i++) {
 		BinaryIO::CheckSpace(fileBuffer, bufferOffset, sizeof(DatHeader));
-		strncpy_s(entries[i].Header.FileName, 13, &(fileBuffer[bufferOffset]), 13);
+		strncpy_s(entries[i].Header.FileName, 13, (char *)(&(fileBuffer[bufferOffset])), 13);
 		entries[i].Header.FileName[12] = '\0';
 		bufferOffset += 13;
 		entries[i].Header.UncompressedSize = BinaryIO::ReadUInt32(fileBuffer, bufferOffset);
@@ -373,7 +373,7 @@ Dat::Dat() {
 	BinaryIO::WriteUInt16(fileBuffer, bufferOffset, entryCount);
 }
 
-void Dat::Add(const char *fileName, std::vector<char> &inputBuffer, bool compress) {
+void Dat::Add(const char *fileName, std::vector<uint8_t> &inputBuffer, bool compress) {
 	DatEntry entry;
 	strncpy_s(entry.Header.FileName, 13, fileName, 12);
 	entry.Header.FileName[12] = '\0';
@@ -420,7 +420,7 @@ DatHeader *Dat::Header(uint32_t index) {
 	return NULL;
 }
 
-bool Dat::Entry(std::vector<char> &inputBuffer) {
+bool Dat::Entry(std::vector<uint8_t> &inputBuffer) {
 	if (entryIteration < entryCount) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
@@ -429,7 +429,7 @@ bool Dat::Entry(std::vector<char> &inputBuffer) {
 	return false;
 }
 
-bool Dat::Entry(uint16_t index, std::vector<char> &inputBuffer) {
+bool Dat::Entry(uint16_t index, std::vector<uint8_t> &inputBuffer) {
 	if (index < entryCount) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
@@ -442,8 +442,8 @@ uint32_t Dat::Size() {
 	return (uint32_t)(fileBuffer.size());
 }
 
-void Dat::Buffer(std::vector<char> &inputBuffer) {
-	std::vector<char> copyBuffer(fileBuffer);
+void Dat::Buffer(std::vector<uint8_t> &inputBuffer) {
+	std::vector<uint8_t> copyBuffer(fileBuffer);
 	copyBuffer.swap(inputBuffer);
 }
 
