@@ -1,6 +1,6 @@
 #include "../headers/header_Exceptions.hpp"
 
-int ErrorCode = Exceptions::Codes::NO_ERROR;
+int ErrorCode = Exceptions::NO_ERROR;
 
 namespace Exceptions {
 	
@@ -10,8 +10,8 @@ namespace Exceptions {
 	}
 
 	void HANDLE() {
-		if (ErrorCode == Exceptions::Codes::NO_ERROR) {
-			ErrorCode = Exceptions::Codes::UNKNOWN_ERROR;
+		if (ErrorCode == Exceptions::NO_ERROR) {
+			ErrorCode = Exceptions::UNKNOWN_ERROR;
 		}
 	}
 }

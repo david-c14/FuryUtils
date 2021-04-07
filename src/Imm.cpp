@@ -7,23 +7,23 @@ Imm::Imm() {
 Imm::Imm(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) {
 	uint32_t inputSize = inputPixels.size();
 	if (inputSize < 9) {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	if (inputPalette.size() != 768) {
-		Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 	}
 	uint8_t *inputArray = inputPixels.data();
 	if (*inputArray++ != 'L') {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	if (*inputArray++ != 'I') {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	if (*inputArray++ != 'B') {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	if (*inputArray++ != 'N') {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	_width = *inputArray++;
 	_width += 256 * (*inputArray++);
@@ -32,7 +32,7 @@ Imm::Imm(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) 
 	inputArray++;
 	std::vector<uint8_t> pixelVector(_width * _height);
 	if ((pixelVector.size() + 9) != inputSize) {
-		Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 	}
 	memcpy(pixelVector.data(), inputArray, pixelVector.size());
 	std::vector<RGBTriple> paletteVector(256);
@@ -57,7 +57,7 @@ void Imm::Buffer(std::vector<uint8_t> &inputBuffer) {
 		inputBuffer.swap(outputBuffer);
 		return;
 	}
-	Exceptions::ERROR(Exceptions::Codes::NOT_IMPLEMENTED);
+	Exceptions::ERROR(Exceptions::NOT_IMPLEMENTED);
 }
 
 uint32_t Imm::ImmSize() {

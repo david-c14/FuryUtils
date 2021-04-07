@@ -69,7 +69,7 @@ void Dat::Uncompress(std::vector<uint8_t> &inputBuffer, uint32_t uncompressedSiz
 			uint8_t byte2 = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
 			uint8_t length = (byte2 & 0x0f) + 3;
 			if ((outputOffset + length) > uncompressedSize) {
-				Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
+				Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 			}
 			int32_t offset = ((byte2 >> 4) << 8) + byte1;
 #ifdef LOGGING
@@ -408,7 +408,7 @@ DatHeader *Dat::Next() {
 	if (++entryIteration < entryCount) {
 		return &entries[entryIteration].Header;
 	}
-	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
+	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
 	return NULL;
 }
 
@@ -416,7 +416,7 @@ DatHeader *Dat::Header(uint32_t index) {
 	if (index < entryCount) {
 		return &entries[index].Header;
 	}
-	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
+	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
 	return NULL;
 }
 
@@ -425,7 +425,7 @@ bool Dat::Entry(std::vector<uint8_t> &inputBuffer) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
 	}
-	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
+	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
 	return false;
 }
 
@@ -434,7 +434,7 @@ bool Dat::Entry(uint16_t index, std::vector<uint8_t> &inputBuffer) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
 	}
-	ErrorCode = Exceptions::Codes::INDEX_OUT_OF_RANGE;
+	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
 	return false;
 }
 

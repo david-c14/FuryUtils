@@ -31,14 +31,14 @@ Bmp::Bmp(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) 
 Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	uint32_t inputSize = inputBuffer.size();
 	if (inputSize < sizeof(BitmapFileHeader) + sizeof(uint32_t)) {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	uint8_t *inputArray = inputBuffer.data();
 	BitmapFileHeader fh;
 	memcpy(&fh, inputArray, sizeof(BitmapFileHeader));
 	inputArray += sizeof(BitmapFileHeader);
 	if (inputSize != fh.size) {
-		Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 	}
 
 	uint32_t paletteCount = 0;
@@ -51,7 +51,7 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	switch (headerSize) {
 	case 40:
 		if (inputSize < sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader)) {
-			Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
+			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 		}
 		{
 			BitmapInfoHeader ih;
@@ -69,21 +69,21 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 			paletteCount = ih.coloursInPalette ? ih.coloursInPalette : (1 << _depth);
 		}
 		if (inputSize < sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + paletteCount * sizeof(RGBAQuad)) {
-			Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
+			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 		}
 		break;
 	default:
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	if (_depth != 4 && _depth != 8) {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	uint32_t stride = 4 * ((_width / (32/_depth)) + ((_width % (32/_depth)) > 0));
 	if (inputSize < fh.pixelOffset + stride * _height) {
-		Exceptions::ERROR(Exceptions::Codes::BUFFER_OVERFLOW);
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 	}
 	if (paletteCount > (1u << _depth)) {
-		Exceptions::ERROR(Exceptions::Codes::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
 	}
 	std::vector<RGBTriple> paletteVector((1 << _depth));
 	paletteVector.swap(_palette);

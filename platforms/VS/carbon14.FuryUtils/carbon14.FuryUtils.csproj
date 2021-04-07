@@ -12,4 +12,8 @@
     <OutputPath>C:\Users\david.orourke\source\Scratch\FuryUtils\Platforms\VS\Debug\</OutputPath>
   </PropertyGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="copy ..\..\..\src\c#errorprefix.txt + ..\..\..\src\errorcodes.txt + ..\..\..\src\c#errorsuffix.txt ErrorCodes.cs" />
+  </Target>
+
 </Project>
