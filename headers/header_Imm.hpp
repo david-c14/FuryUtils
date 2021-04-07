@@ -3,6 +3,10 @@
 #include "header_BinaryIO.hpp"
 #include "header_Exceptions.hpp"
 
+#ifndef APIEXPORT
+#define APIEXPORT
+#endif
+
 #pragma pack(push, 1)
 struct RGBTriple {
 	uint8_t r;
@@ -11,7 +15,7 @@ struct RGBTriple {
 };
 #pragma pack(pop)
 
-struct Imm {
+struct APIEXPORT Imm {
 
 protected: 
 	std::vector<RGBTriple> _palette;

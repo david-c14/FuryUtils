@@ -35,5 +35,11 @@
     <ClCompile Include="Dat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Imm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bmp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -3,6 +3,10 @@
 #include "header_Exceptions.hpp"
 #include "header_Imm.hpp"
 
+#ifndef APIEXPORT
+#define APIEXPORT
+#endif
+
 #pragma pack(push, 1)
 struct RGBAQuad {
 	uint8_t b;
@@ -12,7 +16,7 @@ struct RGBAQuad {
 };
 #pragma pack(pop)
 
-struct Bmp : Imm {
+struct APIEXPORT Bmp : Imm {
 
 private:
 	void MakeBmp();

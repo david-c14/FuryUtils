@@ -14,13 +14,13 @@ struct APIEXPORT DatHeader {
 	uint8_t IsNotCompressed;
 };
 
-struct DatEntry {
+struct APIEXPORT DatEntry {
 	DatHeader Header;
 	uint32_t CompressedBufferOffset;
 };
 #pragma pack(pop)
 
-struct Dat {
+struct APIEXPORT Dat {
 
 private:
 

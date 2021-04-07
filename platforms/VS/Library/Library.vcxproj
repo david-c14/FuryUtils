@@ -168,9 +168,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryIO.cpp" />
+    <ClCompile Include="Bmp.cpp" />
     <ClCompile Include="Dat.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Exceptions.cpp" />
+    <ClCompile Include="Imm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
