@@ -125,14 +125,14 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 
 void Bmp::MakeBmp() {
 	BitmapFileHeader fh;
-	uint32_t stride = 4 * ((_width / 4) + ((_width % 4) > 0));
+	uint32_t stride = 4 * ((_width / (32 / _depth)) + ((_width % (32 / _depth)) > 0));
 	uint32_t paletteSize = sizeof(RGBAQuad) * _palette.size();
 	fh.pixelOffset = sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + paletteSize;
 	fh.size = fh.pixelOffset + stride * _height;
 	BitmapInfoHeader ih;
 	ih.width = _width;
 	ih.height = _height;
-	ih.bpp = 8;
+	ih.bpp = _depth;
 	ih.imageSize = stride * _height;
 	std::vector<uint8_t> newBuffer(fh.size);
 
@@ -153,10 +153,24 @@ void Bmp::MakeBmp() {
 
 	uint8_t *pixelArray = _pixels.data();
 	unsigned int i = _height;
-	while (i) {
-		i--;
-		memcpy(bufferArray + i * stride, pixelArray, _width);
-		pixelArray += _width;
+	if (_depth == 8) {
+		while (i) {
+			i--;
+			memcpy(bufferArray + i * stride, pixelArray, _width);
+			pixelArray += _width;
+		}
+	}
+	else {
+		while (i) {
+			i--;
+			for (unsigned int j = 0; j < _width; j += 2) {
+				bufferArray[i * stride + j / 2] = (*pixelArray++) << 4;
+				if (j < _width - 1u) {
+					bufferArray[i * stride + j / 2] += (*pixelArray) & 0x0f;
+				}
+				pixelArray++;
+			}
+		}
 	}
 	_outputBuffer.swap(newBuffer);
 }
