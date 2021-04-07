@@ -1,8 +1,8 @@
 #include <fstream>
-#include "../classes/class_BinaryIO.cpp"
-#include "../classes/class_Imm.cpp"
-#include "../classes/class_Bmp.cpp"
-#include "../modules/module_Exceptions.cpp"
+#include "BinaryIO.cpp"
+#include "Imm.cpp"
+#include "Bmp.cpp"
+#include "Exceptions.cpp"
 
 int Usage(char *arg0) {
 	printf("%s usage:\n\n", arg0);

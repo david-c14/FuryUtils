@@ -1,6 +1,6 @@
 #include "../../../headers/header_BinaryIO.hpp"
 #define APIEXPORT __declspec(dllexport)
-#include "../../../classes/class_Dat.cpp"
+#include "../../../src/Dat.cpp"
 
 extern "C" {
 	APIEXPORT Dat * __cdecl Dat_createNew() {
