@@ -37,6 +37,12 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	BitmapFileHeader fh;
 	memcpy(&fh, inputArray, sizeof(BitmapFileHeader));
 	inputArray += sizeof(BitmapFileHeader);
+	if (fh.b != 'B') {
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
+	}
+	if (fh.m != 'M') {
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
+	}
 	if (inputSize != fh.size) {
 		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
 	}

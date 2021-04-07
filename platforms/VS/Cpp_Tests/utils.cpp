@@ -7,7 +7,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace utils {
 
 	std::vector<uint8_t> ReadFile(std::string fileName) {
-		fileName.insert(0, "..\\testing\\");
+		fileName.insert(0, "..\\..\\..\\testassets\\");
 
 		std::ifstream file(fileName, std::ios::binary | std::ios::ate);
 		Assert::IsFalse(file.fail(), L"Could not open file");
