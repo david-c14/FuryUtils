@@ -19,8 +19,9 @@ namespace BmpTests
 				Bmp bmp(utils::ReadFile("tooshort.bmp"));
 				Assert::Fail(L"Exception not raised");
 			}
-			catch(int x) {
-				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x);
+			catch(Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual("Buffer is too short to contain a valid Bmp", x._errorString.c_str());
 			}
 		}
 
@@ -29,8 +30,9 @@ namespace BmpTests
 				Bmp bmp(utils::ReadFile("ba-bm.bmp"));
 				Assert::Fail(L"Exception not raised");
 			}
-			catch (int x) {
-				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x);
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual("Second character of buffer is not 'M'", x._errorString.c_str());
 			}
 
 		}

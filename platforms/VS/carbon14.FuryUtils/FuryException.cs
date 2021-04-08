@@ -5,7 +5,7 @@ namespace carbon14.FuryUtils
 {
     public class FuryException : Exception
     {
-        public FuryException(ErrorCodes errorCode) : this(errorCode, ExceptionMessages.Message(errorCode), null)
+        public FuryException(ErrorCodes errorCode) : this(errorCode, "", null)
         {
         }
 
@@ -23,17 +23,26 @@ namespace carbon14.FuryUtils
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int GetExceptionCode();
 
+        [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern IntPtr GetExceptionString();
+
         public static int Code()
         {
             return GetExceptionCode();
         }
 
+        public static string ErrorString()
+        {
+            return Marshal.PtrToStringAnsi(GetExceptionString());
+        }
+
         public static void Throw()
         {
             int code = Code();
+            string message = ErrorString();
             if (code > 0)
             {
-                throw new FuryException((ErrorCodes)code);
+                throw new FuryException((ErrorCodes)code, message);
             }
         }
     }

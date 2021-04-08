@@ -5,7 +5,7 @@ namespace BinaryIO {
 
 	void CheckSpace(std::vector<uint8_t> &buffer, uint32_t bufferOffset, uint32_t required) {
 		if ((bufferOffset + required) > buffer.size()) {
-			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
+			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Attempt to read beyond end of buffer");
 		}
 		return;
 	}

@@ -49,10 +49,10 @@ int List(int argc, char* argv[]) {
 		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
 		return Exceptions::IO_ERROR;
 	}
-	catch (const int error)
+	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d\n", argv[0], error);
-		return error;
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
 }
@@ -84,10 +84,10 @@ int Brief(int argc, char* argv[]) {
 		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
 		return Exceptions::IO_ERROR;
 	}
-	catch (const int error)
+	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d\n", argv[0], error);
-		return error;
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
 }
@@ -144,10 +144,10 @@ int Extract(int argc, char* argv[]) {
 		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
 		return Exceptions::IO_ERROR;
 	}
-	catch (const int error)
+	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d\n", argv[0], error);
-		return error;
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
 }
@@ -196,10 +196,10 @@ int ExtractAll(int argc, char* argv[]) {
 		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
 		return Exceptions::IO_ERROR;
 	}
-	catch (const int error)
+	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d\n", argv[0], error);
-		return error;
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
 }
@@ -273,9 +273,10 @@ int Create(int argc, char* argv[], bool compress) {
 		}
 		return 0;
 	}
-	catch (const int error) {
-		printf("%s Error:\n\n%d\n", argv[0], error);
-		return error;
+	catch (Exceptions::Exception e)
+	{
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
 }

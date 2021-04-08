@@ -64,10 +64,10 @@ int ImmToBmp(int argc, char* argv[]) {
 		}
 		return 0;
 	}
-	catch (int error)
+	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d\n", argv[0], error);
-		return error;
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
 }
@@ -120,10 +120,10 @@ int BmpToImm(int argc, char* argv[]) {
 		}
 		return 0;
 	}
-	catch (int error)
+	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d\n", argv[0], error);
-		return error;
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
 }

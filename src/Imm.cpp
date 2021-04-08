@@ -7,23 +7,23 @@ Imm::Imm() {
 Imm::Imm(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) {
 	uint32_t inputSize = inputPixels.size();
 	if (inputSize < 9) {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "image buffer size is too short for valid Imm");
 	}
 	if (inputPalette.size() != 768) {
-		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "palette buffer is the wrong size");
 	}
 	uint8_t *inputArray = inputPixels.data();
 	if (*inputArray++ != 'L') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "First character of image buffer should be 'L'");
 	}
 	if (*inputArray++ != 'I') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Second character of image buffer should be 'I'");
 	}
 	if (*inputArray++ != 'B') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Third character of image buffer should be 'B'");
 	}
 	if (*inputArray++ != 'N') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT);
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Fourth character of image buffer should by 'N'");
 	}
 	_width = *inputArray++;
 	_width += 256 * (*inputArray++);
@@ -32,7 +32,7 @@ Imm::Imm(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) 
 	inputArray++;
 	std::vector<uint8_t> pixelVector(_width * _height);
 	if ((pixelVector.size() + 9) != inputSize) {
-		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW);
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Image buffer size does not match declared size");
 	}
 	memcpy(pixelVector.data(), inputArray, pixelVector.size());
 	std::vector<RGBTriple> paletteVector(256);
@@ -57,7 +57,7 @@ void Imm::Buffer(std::vector<uint8_t> &inputBuffer) {
 		inputBuffer.swap(outputBuffer);
 		return;
 	}
-	Exceptions::ERROR(Exceptions::NOT_IMPLEMENTED);
+	Exceptions::ERROR(Exceptions::NOT_IMPLEMENTED, "Not implemented");
 }
 
 uint32_t Imm::ImmSize() {

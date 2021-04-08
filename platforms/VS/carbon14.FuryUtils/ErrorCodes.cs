@@ -9,7 +9,8 @@ namespace carbon14.FuryUtils
         INDEX_OUT_OF_RANGE,
         NOT_IMPLEMENTED,
         IO_ERROR,
-        UNKNOWN_ERROR
+        UNKNOWN_ERROR,
+		MAX_ERROR
     };
 }
 
