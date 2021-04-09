@@ -31,20 +31,20 @@ Bmp::Bmp(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) 
 Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	uint32_t inputSize = inputBuffer.size();
 	if (inputSize < sizeof(BitmapFileHeader) + sizeof(uint32_t)) {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Buffer is too short to contain a valid Bmp");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_SHORT_HEADER);
 	}
 	uint8_t *inputArray = inputBuffer.data();
 	BitmapFileHeader fh;
 	memcpy(&fh, inputArray, sizeof(BitmapFileHeader));
 	inputArray += sizeof(BitmapFileHeader);
 	if (fh.b != 'B') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "First character of buffer is not 'B'");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_HEADER_MAGIC);
 	}
 	if (fh.m != 'M') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Second character of buffer is not 'M'");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_HEADER_MAGIC);
 	}
 	if (inputSize != fh.size) {
-		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Buffer size does not agree with declared size in header");
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_SIZE_MISMATCH);
 	}
 
 	uint32_t paletteCount = 0;
@@ -57,7 +57,7 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	switch (headerSize) {
 	case 40:
 		if (inputSize < sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader)) {
-			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Buffer size is too small to hold info structure");
+			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_INFO_SIZE_MISMATCH);
 		}
 		{
 			BitmapInfoHeader ih;
@@ -75,21 +75,21 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 			paletteCount = ih.coloursInPalette ? ih.coloursInPalette : (1 << _depth);
 		}
 		if (inputSize < sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + paletteCount * sizeof(RGBAQuad)) {
-			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Buffer size is too small to hold specified Bmp");
+			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
 		}
 		break;
 	default:
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Info header type is not recognized");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_VERSION);
 	}
 	if (_depth != 4 && _depth != 8) {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Only 16-color and 256-color Bmp are supported");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_DEPTH);
 	}
 	uint32_t stride = 4 * ((_width / (32/_depth)) + ((_width % (32/_depth)) > 0));
 	if (inputSize < fh.pixelOffset + stride * _height) {
-		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Buffer is too small to hold Bmp pixel data");
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
 	}
 	if (paletteCount > (1u << _depth)) {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Declared palette size is too large");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_PALETTE_SIZE_MISMATCH);
 	}
 	std::vector<RGBTriple> paletteVector((1 << _depth));
 	paletteVector.swap(_palette);
@@ -103,7 +103,7 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 		_palette[i].b = quad.b;
 	}
 	inputArray = inputBuffer.data() + fh.pixelOffset;
-	std::vector<uint8_t> pixelVector(stride * _height);
+	std::vector<uint8_t> pixelVector(_width * _height);
 	pixelVector.swap(_pixels);
 	uint32_t start = topToBottom?0:(_height - 1);
 	uint32_t end = topToBottom?_height:-1;

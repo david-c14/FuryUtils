@@ -69,7 +69,7 @@ void Dat::Uncompress(std::vector<uint8_t> &inputBuffer, uint32_t uncompressedSiz
 			uint8_t byte2 = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
 			uint8_t length = (byte2 & 0x0f) + 3;
 			if ((outputOffset + length) > uncompressedSize) {
-				Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Uncompressed data is larger than declared size");
+				Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_DAT_COMPRESSION_SIZE_MISMATCH);
 			}
 			int32_t offset = ((byte2 >> 4) << 8) + byte1;
 #ifdef LOGGING

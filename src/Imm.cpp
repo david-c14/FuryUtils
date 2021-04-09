@@ -7,23 +7,23 @@ Imm::Imm() {
 Imm::Imm(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) {
 	uint32_t inputSize = inputPixels.size();
 	if (inputSize < 9) {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "image buffer size is too short for valid Imm");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_IMM_SHORT_HEADER);
 	}
 	if (inputPalette.size() != 768) {
-		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "palette buffer is the wrong size");
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IMM_PALETTE_SIZE);
 	}
 	uint8_t *inputArray = inputPixels.data();
 	if (*inputArray++ != 'L') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "First character of image buffer should be 'L'");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_IMM_HEADER_MAGIC);
 	}
 	if (*inputArray++ != 'I') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Second character of image buffer should be 'I'");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_IMM_HEADER_MAGIC);
 	}
 	if (*inputArray++ != 'B') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Third character of image buffer should be 'B'");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_IMM_HEADER_MAGIC);
 	}
 	if (*inputArray++ != 'N') {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, "Fourth character of image buffer should by 'N'");
+		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_IMM_HEADER_MAGIC);
 	}
 	_width = *inputArray++;
 	_width += 256 * (*inputArray++);
@@ -32,7 +32,7 @@ Imm::Imm(std::vector<uint8_t> &inputPalette, std::vector<uint8_t> &inputPixels) 
 	inputArray++;
 	std::vector<uint8_t> pixelVector(_width * _height);
 	if ((pixelVector.size() + 9) != inputSize) {
-		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, "Image buffer size does not match declared size");
+		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IMM_SIZE_MISMATCH);
 	}
 	memcpy(pixelVector.data(), inputArray, pixelVector.size());
 	std::vector<RGBTriple> paletteVector(256);
@@ -57,7 +57,7 @@ void Imm::Buffer(std::vector<uint8_t> &inputBuffer) {
 		inputBuffer.swap(outputBuffer);
 		return;
 	}
-	Exceptions::ERROR(Exceptions::NOT_IMPLEMENTED, "Not implemented");
+	Exceptions::ERROR(Exceptions::NOT_IMPLEMENTED, Exceptions::ERROR_IMM_NOT_IMPLEMENTED);
 }
 
 uint32_t Imm::ImmSize() {

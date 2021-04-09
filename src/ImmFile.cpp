@@ -19,31 +19,31 @@ int ImmToBmp(int argc, char* argv[]) {
 	}
 	try
 	{
-		std::ifstream pamFile(argv[2], std::ios::binary | std::ios::ate);
-		if (!pamFile) {
+		std::ifstream immFile(argv[2], std::ios::binary | std::ios::ate);
+		if (!immFile) {
 			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
 			return Exceptions::IO_ERROR;
 		}
-		std::streamsize size = pamFile.tellg();
-		pamFile.seekg(0, std::ios::beg);
+		std::streamsize size = immFile.tellg();
+		immFile.seekg(0, std::ios::beg);
 
-		std::vector<uint8_t> pamBuffer((uint32_t)size);
-		if (!pamFile.read((char *)(pamBuffer.data()), size))
+		std::vector<uint8_t> immBuffer((uint32_t)size);
+		if (!immFile.read((char *)(immBuffer.data()), size))
 		{
 			printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 
-		std::ifstream immFile(argv[3], std::ios::binary | std::ios::ate);
-		if (!immFile) {
+		std::ifstream pamFile(argv[3], std::ios::binary | std::ios::ate);
+		if (!pamFile) {
 			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[3]);
 			return Exceptions::IO_ERROR;
 		}
-		size = immFile.tellg();
-		immFile.seekg(0, std::ios::beg);
+		size = pamFile.tellg();
+		pamFile.seekg(0, std::ios::beg);
 
-		std::vector<uint8_t> immBuffer((uint32_t)size);
-		if (!immFile.read((char *)(immBuffer.data()), size))
+		std::vector<uint8_t> pamBuffer((uint32_t)size);
+		if (!pamFile.read((char *)(pamBuffer.data()), size))
 		{
 			printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[3]);
 			return Exceptions::IO_ERROR;
@@ -66,7 +66,7 @@ int ImmToBmp(int argc, char* argv[]) {
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -95,34 +95,35 @@ int BmpToImm(int argc, char* argv[]) {
 
 		Bmp bmp(bmpBuffer);
 
-		std::vector<uint8_t> pamBuffer;
-		bmp.PamBuffer(pamBuffer);
+		std::vector<uint8_t> immBuffer;
+		bmp.ImmBuffer(immBuffer);
 
-		std::ofstream pamFile(argv[3], std::ios::binary | std::ios::trunc);
-		if (pamFile) {
-			pamFile.write((char *)(pamBuffer.data()), pamBuffer.size());
+		std::ofstream immFile(argv[3], std::ios::binary | std::ios::trunc);
+		if (immFile) {
+			immFile.write((char *)(immBuffer.data()), immBuffer.size());
 		}
 		else {
 			printf("%s Error: Could not write output file \"%s\"\n", argv[0], argv[3]);
 			return Exceptions::IO_ERROR;
 		}
 
-		std::vector<uint8_t> immBuffer;
-		bmp.ImmBuffer(immBuffer);
+		std::vector<uint8_t> pamBuffer;
+		bmp.PamBuffer(pamBuffer);
 
-		std::ofstream immFile(argv[4], std::ios::binary | std::ios::trunc);
-		if (immFile) {
-			immFile.write((char *)(immBuffer.data()), immBuffer.size());
+		std::ofstream pamFile(argv[4], std::ios::binary | std::ios::trunc);
+		if (pamFile) {
+			pamFile.write((char *)(pamBuffer.data()), pamBuffer.size());
 		}
 		else {
 			printf("%s Error: Could not write output file \"%s\"\n", argv[0], argv[4]);
 			return Exceptions::IO_ERROR;
 		}
+
 		return 0;
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;

@@ -15,6 +15,9 @@ struct RGBTriple {
 };
 #pragma pack(pop)
 
+#pragma warning(push)
+#pragma warning(disable:4251)
+
 struct APIEXPORT Imm {
 
 protected: 
@@ -36,3 +39,5 @@ public:
 	void PamBuffer(std::vector<uint8_t> &inputBuffer);
 
 };
+
+#pragma warning(pop)

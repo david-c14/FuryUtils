@@ -51,7 +51,7 @@ int List(int argc, char* argv[]) {
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -86,7 +86,7 @@ int Brief(int argc, char* argv[]) {
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -146,7 +146,7 @@ int Extract(int argc, char* argv[]) {
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -198,7 +198,7 @@ int ExtractAll(int argc, char* argv[]) {
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -275,7 +275,7 @@ int Create(int argc, char* argv[], bool compress) {
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString);
+		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;

@@ -20,6 +20,9 @@ struct APIEXPORT DatEntry {
 };
 #pragma pack(pop)
 
+#pragma warning(push)
+#pragma warning(disable:4251)
+
 struct APIEXPORT Dat {
 
 private:
@@ -47,3 +50,5 @@ public:
 	uint32_t Size();
 	void Buffer(std::vector<uint8_t> &inputBuffer);
 };
+
+#pragma warning(pop)
