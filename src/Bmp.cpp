@@ -9,6 +9,14 @@ struct BitmapFileHeader {
 	uint32_t pixelOffset;
 };
 
+struct BitmapCoreHeader {
+	uint32_t size;
+	uint16_t width;
+	uint16_t height;
+	uint16_t colourPlanes;
+	uint16_t bpp;
+};
+
 struct BitmapInfoHeader {
 	uint32_t size = 40;
 	uint32_t width;
@@ -21,6 +29,12 @@ struct BitmapInfoHeader {
 	uint32_t vertResolution = 0;
 	uint32_t coloursInPalette = 0;
 	uint32_t importantColours = 0;
+};
+
+struct BGRTriple {
+	uint8_t b;
+	uint8_t g;
+	uint8_t r;
 };
 #pragma pack(pop)
 
@@ -49,6 +63,7 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 
 	uint32_t paletteCount = 0;
 	bool topToBottom = false;
+	bool core = false;
 
 	uint32_t headerSize = *inputArray;
 	headerSize += 0x100 * *(inputArray + 1);
@@ -56,13 +71,15 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	headerSize += 0x1000000 * *(inputArray + 3);
 	switch (headerSize) {
 	case 40:
-		if (inputSize < sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader)) {
+	case 108:
+	case 124:
+		if (inputSize < sizeof(BitmapFileHeader) + headerSize) {
 			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_INFO_SIZE_MISMATCH);
 		}
 		{
 			BitmapInfoHeader ih;
 			memcpy(&ih, inputArray, sizeof(BitmapInfoHeader));
-			inputArray += sizeof(BitmapInfoHeader);
+			inputArray += headerSize;
 			_width = ih.width;
 			if (ih.height < 0) {
 				topToBottom = true;
@@ -74,7 +91,25 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 			_depth = ih.bpp;
 			paletteCount = ih.coloursInPalette ? ih.coloursInPalette : (1 << _depth);
 		}
-		if (inputSize < sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + paletteCount * sizeof(RGBAQuad)) {
+		if (inputSize < sizeof(BitmapFileHeader) + headerSize + paletteCount * sizeof(RGBAQuad)) {
+			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
+		}
+		break;
+	case 12:
+		core = true;
+		if (inputSize < sizeof(BitmapFileHeader) + headerSize) {
+			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_INFO_SIZE_MISMATCH);
+		}
+		{
+			BitmapCoreHeader ch;
+			memcpy(&ch, inputArray, sizeof(BitmapCoreHeader));
+			inputArray += headerSize;
+			_width = ch.width;
+			_height = ch.height;
+			_depth = ch.bpp;
+			paletteCount = (1 << _depth);
+		}
+		if (inputSize < sizeof(BitmapFileHeader) + headerSize + paletteCount * sizeof(BGRTriple)) {
 			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
 		}
 		break;
@@ -93,14 +128,27 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	}
 	std::vector<RGBTriple> paletteVector((1 << _depth));
 	paletteVector.swap(_palette);
-	RGBAQuad quad;
-	for (unsigned int i = 0; i < paletteCount; i++) {
-		
-		memcpy(&quad, inputArray, sizeof(RGBAQuad));
-		inputArray += sizeof(RGBAQuad);
-		_palette[i].r = quad.r;
-		_palette[i].g = quad.g;
-		_palette[i].b = quad.b;
+	if (core) {
+		BGRTriple triple;
+		for (unsigned int i = 0; i < paletteCount; i++) {
+
+			memcpy(&triple, inputArray, sizeof(BGRTriple));
+			inputArray += sizeof(BGRTriple);
+			_palette[i].r = triple.r;
+			_palette[i].g = triple.g;
+			_palette[i].b = triple.b;
+		}
+	}
+	else {
+		RGBAQuad quad;
+		for (unsigned int i = 0; i < paletteCount; i++) {
+
+			memcpy(&quad, inputArray, sizeof(RGBAQuad));
+			inputArray += sizeof(RGBAQuad);
+			_palette[i].r = quad.r;
+			_palette[i].g = quad.g;
+			_palette[i].b = quad.b;
+		}
 	}
 	inputArray = inputBuffer.data() + fh.pixelOffset;
 	std::vector<uint8_t> pixelVector(_width * _height);
@@ -172,9 +220,8 @@ void Bmp::MakeBmp() {
 			for (unsigned int j = 0; j < _width; j += 2) {
 				bufferArray[i * stride + j / 2] = (*pixelArray++) << 4;
 				if (j < _width - 1u) {
-					bufferArray[i * stride + j / 2] += (*pixelArray) & 0x0f;
+					bufferArray[i * stride + j / 2] += (*pixelArray++) & 0x0f;
 				}
-				pixelArray++;
 			}
 		}
 	}

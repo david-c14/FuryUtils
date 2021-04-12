@@ -125,10 +125,72 @@ namespace BmpTests
 		}
 
 		TEST_METHOD(Given_a_file_with_an_8bpp_bitmap_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
-			Bmp bmp(utils::ReadFile("pal8.bmp"));
 			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal8.bmp"));
 			std::vector<uint8_t> actual;
 			bmp.Buffer(actual);
+
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_bitmap_with_negative_height_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal8topdown.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_os2_bitmap_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal8os2.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_v4_bitmap_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal8v4.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_v5_bitmap_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal8v5.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_with_minimal_info_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal8-0.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_4bpp_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal4out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal4.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+
 			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
 		}
 
