@@ -64,6 +64,8 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	uint32_t paletteCount = 0;
 	bool topToBottom = false;
 	bool core = false;
+	uint32_t compression = 0;
+	uint32_t size = 0;
 
 	uint32_t headerSize = *inputArray;
 	headerSize += 0x100 * *(inputArray + 1);
@@ -90,6 +92,16 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 			}
 			_depth = ih.bpp;
 			paletteCount = ih.coloursInPalette ? ih.coloursInPalette : (1 << _depth);
+			compression = ih.compression;
+			if (compression) {
+				size = ih.imageSize;
+				if (!size) {
+					Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
+				}
+				if (inputSize < fh.pixelOffset + size) {
+					Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
+				}
+			}
 		}
 		if (inputSize < sizeof(BitmapFileHeader) + headerSize + paletteCount * sizeof(RGBAQuad)) {
 			Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
@@ -114,13 +126,23 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 		}
 		break;
 	default:
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_VERSION);
+		Exceptions::ERROR(Exceptions::UNSUPPORTED_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_VERSION);
 	}
 	if (_depth != 4 && _depth != 8) {
-		Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_DEPTH);
+		Exceptions::ERROR(Exceptions::UNSUPPORTED_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_DEPTH);
+	}
+	if (_depth == 4) {
+		if (compression != 0 && compression != 2) {
+			Exceptions::ERROR(Exceptions::UNSUPPORTED_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_COMPRESSION);
+		}
+	}
+	else {
+		if (compression > 1) {
+			Exceptions::ERROR(Exceptions::UNSUPPORTED_FORMAT, Exceptions::ERROR_BMP_UNSUPPORTED_COMPRESSION);
+		}
 	}
 	uint32_t stride = 4 * ((_width / (32/_depth)) + ((_width % (32/_depth)) > 0));
-	if (inputSize < fh.pixelOffset + stride * _height) {
+	if (compression == 0 && (inputSize < fh.pixelOffset + stride * _height)) {
 		Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_IMAGE_SIZE_MISMATCH);
 	}
 	if (paletteCount > (1u << _depth)) {
@@ -153,23 +175,100 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	inputArray = inputBuffer.data() + fh.pixelOffset;
 	std::vector<uint8_t> pixelVector(_width * _height);
 	pixelVector.swap(_pixels);
-	uint32_t start = topToBottom?0:(_height - 1);
-	uint32_t end = topToBottom?_height:-1;
-	uint32_t dir = topToBottom?1:-1;
 	uint8_t *pixelArray = _pixels.data();
-	if (_depth == 8) {
-		for (signed int i = start; i != end; i += dir) {
-			memcpy(pixelArray, inputArray + i * stride, _width);
-			pixelArray += _width;
+	if (compression) {
+		if (topToBottom) {
+			Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_TOP_TO_BOTTOM_RLE);
+		}
+		if (_depth == 8) {
+			int32_t y = _height - 1;
+			uint32_t x = 0;
+			uint8_t flag1;
+			uint8_t flag2;
+			while (size) {
+				if (size < 2) {
+					Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+				}
+				flag1 = *inputArray++;
+				flag2 = *inputArray++;
+				size -= 2;
+				if (flag1) {
+					if ((y * _width + _width - x) < flag1) {
+						Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_COMPRESSION_ERROR);
+					}
+					while (flag1--) {
+						pixelArray[y * _width + x++] = flag2;
+						if (x >= _width) {
+							y--;
+							x = 0;
+						}
+					}
+				}
+				else {
+					if (flag2 == 0 && x) {
+						y--;
+						x = 0;
+					}
+					else if (flag2 == 1) {
+						y = -1;
+					}
+					else if (flag2 == 2) {
+						if (size < 2) {
+							Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+						}
+						y -= *inputArray++;
+						x += *inputArray++;
+						size -= 2;
+					}
+					else {
+						uint8_t pad = flag2 % 2;
+						if (size < flag2) {
+							Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+						}
+						size -= flag2;
+						if ((y * _width + _width - x) < flag2) {
+							Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+						}
+						while (flag2--) {
+							pixelArray[y * _width + x++] = *inputArray++;
+							if (x >= _width) {
+								y--;
+								x = 0;
+							}
+						}
+						inputArray += pad;
+					}
+				}
+				if (x >= _width) {
+					Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_COMPRESSION_ERROR);
+				}
+				if (y == -1) {
+					break;
+				}
+			}
+		}
+		else {
+
 		}
 	}
 	else {
-		for (signed int i = start; i != end; i += dir) {
-			for (unsigned int j = 0; j < _width; j += 2) {
-				uint8_t pair = inputArray[i * stride + j / 2];
-				*pixelArray++ = pair >> 4;
-				if (j < _width - 1u) {
-					*pixelArray++ = pair & 0xf;
+		uint32_t start = topToBottom ? 0 : (_height - 1);
+		int32_t end = topToBottom ? _height : -1;
+		int32_t dir = topToBottom ? 1 : -1;
+		if (_depth == 8) {
+			for (signed int i = start; i != end; i += dir) {
+				memcpy(pixelArray, inputArray + i * stride, _width);
+				pixelArray += _width;
+			}
+		}
+		else {
+			for (signed int i = start; i != end; i += dir) {
+				for (unsigned int j = 0; j < _width; j += 2) {
+					uint8_t pair = inputArray[i * stride + j / 2];
+					*pixelArray++ = pair >> 4;
+					if (j < _width - 1u) {
+						*pixelArray++ = pair & 0xf;
+					}
 				}
 			}
 		}

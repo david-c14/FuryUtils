@@ -31,7 +31,10 @@ namespace Exceptions
 	const char ERROR_BMP_IMAGE_SIZE_MISMATCH[] = "Buffer size is too small to hold specified image";
 	const char ERROR_BMP_UNSUPPORTED_VERSION[] = "Info header version is not supported";
 	const char ERROR_BMP_UNSUPPORTED_DEPTH[] = "Only 16-color and 256-color Bmp are supported";
+	const char ERROR_BMP_UNSUPPORTED_COMPRESSION[] = "Only uncompressed and RLE compressed Bmp are supported";
 	const char ERROR_BMP_PALETTE_SIZE_MISMATCH[] = "Declared palette size is too large";
+	const char ERROR_BMP_TOP_TO_BOTTOM_RLE[] = "Top to bottom RLE encoded Bmp are not valid";
+	const char ERROR_BMP_COMPRESSION_ERROR[] = "Compressed data contains an error";
 
 	const char ERROR_DAT_COMPRESSION_SIZE_MISMATCH[] = "Uncompressed data is larger than declared size";
 

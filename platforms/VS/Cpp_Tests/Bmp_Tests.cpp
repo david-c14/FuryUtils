@@ -86,7 +86,7 @@ namespace BmpTests
 				Assert::Fail(L"Exception not raised");
 			}
 			catch (Exceptions::Exception x) {
-				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual((int)Exceptions::UNSUPPORTED_FORMAT, x._errorCode);
 				Assert::AreEqual(Exceptions::ERROR_BMP_UNSUPPORTED_VERSION, x._errorString.c_str());
 			}
 		}
@@ -97,7 +97,7 @@ namespace BmpTests
 				Assert::Fail(L"Exception not raised");
 			}
 			catch (Exceptions::Exception x) {
-				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual((int)Exceptions::UNSUPPORTED_FORMAT, x._errorCode);
 				Assert::AreEqual(Exceptions::ERROR_BMP_UNSUPPORTED_DEPTH, x._errorString.c_str());
 			}
 		}
@@ -191,6 +191,16 @@ namespace BmpTests
 			std::vector<uint8_t> actual;
 			bmp.Buffer(actual);
 
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_rle_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal8rle.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+			
 			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
 		}
 
