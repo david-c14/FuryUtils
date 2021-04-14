@@ -8,9 +8,9 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace BmpTests
+namespace Bmp_Tests
 {
-	TEST_CLASS(BmpTests)
+	TEST_CLASS(Bmp_Tests)
 	{
 	public:
 
@@ -290,7 +290,5 @@ namespace BmpTests
 
 			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
 		}
-
-
 	};
 }
