@@ -124,6 +124,83 @@ namespace BmpTests
 			}
 		}
 
+		TEST_METHOD(Given_a_file_with_an_8bpp_topdown_rle_When_the_file_is_used_to_construct_a_bmp_Then_an_INVALID_FORMAT_exception_is_raised) {
+			try {
+				Bmp bmp(utils::ReadFile("rletopdown.bmp"));
+				Assert::Fail(L"Exception not raised");
+			}
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual(Exceptions::ERROR_BMP_TOP_TO_BOTTOM_RLE, x._errorString.c_str());
+			}
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_bad_rle_When_the_file_is_used_to_construct_a_bmp_Then_an_INVALID_FORMAT_exception_is_raised) {
+			try {
+				Bmp bmp(utils::ReadFile("badrle.bmp"));
+				Assert::Fail(L"Exception not raised");
+			}
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual(Exceptions::ERROR_BMP_COMPRESSION_ERROR, x._errorString.c_str());
+			}
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_bad_rlebis_When_the_file_is_used_to_construct_a_bmp_Then_an_INVALID_FORMAT_exception_is_raised) {
+			try {
+				Bmp bmp(utils::ReadFile("badrlebis.bmp"));
+				Assert::Fail(L"Exception not raised");
+			}
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual(Exceptions::ERROR_BMP_COMPRESSION_ERROR, x._errorString.c_str());
+			}
+		}
+
+		TEST_METHOD(Given_a_file_with_an_8bpp_bad_rleter_When_the_file_is_used_to_construct_a_bmp_Then_an_INVALID_FORMAT_exception_is_raised) {
+			try {
+				Bmp bmp(utils::ReadFile("badrleter.bmp"));
+				Assert::Fail(L"Exception not raised");
+			}
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual(Exceptions::ERROR_BMP_COMPRESSION_ERROR, x._errorString.c_str());
+			}
+		}
+
+		TEST_METHOD(Given_a_file_with_an_4bpp_bad_rle_When_the_file_is_used_to_construct_a_bmp_Then_an_INVALID_FORMAT_exception_is_raised) {
+			try {
+				Bmp bmp(utils::ReadFile("badrle4.bmp"));
+				Assert::Fail(L"Exception not raised");
+			}
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual(Exceptions::ERROR_BMP_COMPRESSION_ERROR, x._errorString.c_str());
+			}
+		}
+
+		TEST_METHOD(Given_a_file_with_an_4bpp_bad_rlebis_When_the_file_is_used_to_construct_a_bmp_Then_an_INVALID_FORMAT_exception_is_raised) {
+			try {
+				Bmp bmp(utils::ReadFile("badrle4bis.bmp"));
+				Assert::Fail(L"Exception not raised");
+			}
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual(Exceptions::ERROR_BMP_COMPRESSION_ERROR, x._errorString.c_str());
+			}
+		}
+
+		TEST_METHOD(Given_a_file_with_an_4bpp_bad_rleter_When_the_file_is_used_to_construct_a_bmp_Then_an_INVALID_FORMAT_exception_is_raised) {
+			try {
+				Bmp bmp(utils::ReadFile("badrle4ter.bmp"));
+				Assert::Fail(L"Exception not raised");
+			}
+			catch (Exceptions::Exception x) {
+				Assert::AreEqual((int)Exceptions::INVALID_FORMAT, x._errorCode);
+				Assert::AreEqual(Exceptions::ERROR_BMP_COMPRESSION_ERROR, x._errorString.c_str());
+			}
+		}
+
 		TEST_METHOD(Given_a_file_with_an_8bpp_bitmap_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
 			std::vector<uint8_t> expected = utils::ReadFile("pal8out.bmp");
 
@@ -200,7 +277,17 @@ namespace BmpTests
 			Bmp bmp(utils::ReadFile("pal8rle.bmp"));
 			std::vector<uint8_t> actual;
 			bmp.Buffer(actual);
-			
+
+			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
+		}
+
+		TEST_METHOD(Given_a_file_with_an_4bpp_rle_When_the_file_is_used_to_construct_a_bmp_Then_the_bmp_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("pal4out.bmp");
+
+			Bmp bmp(utils::ReadFile("pal4rle.bmp"));
+			std::vector<uint8_t> actual;
+			bmp.Buffer(actual);
+
 			Assert::IsTrue((expected == actual), L"Copied bitmap is not as expected");
 		}
 

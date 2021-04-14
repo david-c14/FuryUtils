@@ -65,7 +65,7 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 	bool topToBottom = false;
 	bool core = false;
 	uint32_t compression = 0;
-	uint32_t size = 0;
+	int32_t size = 0;
 
 	uint32_t headerSize = *inputArray;
 	headerSize += 0x100 * *(inputArray + 1);
@@ -218,6 +218,9 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 						}
 						y -= *inputArray++;
 						x += *inputArray++;
+						if (y < 0) {
+							Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_COMPRESSION_ERROR);
+						}
 						size -= 2;
 					}
 					else {
@@ -237,18 +240,110 @@ Bmp::Bmp(std::vector<uint8_t> &inputBuffer) {
 							}
 						}
 						inputArray += pad;
+						size -= pad;
 					}
 				}
 				if (x >= _width) {
 					Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_COMPRESSION_ERROR);
 				}
-				if (y == -1) {
+				if (y < 0) {
 					break;
 				}
 			}
 		}
 		else {
-
+			int32_t y = _height - 1;
+			uint32_t x = 0;
+			uint8_t flag1;
+			uint8_t flag2;
+			while (size) {
+				if (size < 2) {
+					Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+				}
+				flag1 = *inputArray++;
+				flag2 = *inputArray++;
+				size -= 2;
+				if (flag1) {
+					if ((y * _width + _width - x) < flag1) {
+						Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_BMP_COMPRESSION_ERROR);
+					}
+					while (flag1--) {
+						pixelArray[y * _width + x++] = flag2 >> 4;
+						if (x >= _width) {
+							y--;
+							x = 0;
+						}
+						if (flag1--) {
+							pixelArray[y * _width + x++] = flag2 & 0xf;
+							if (x >= _width) {
+								y--;
+								x = 0;
+							}
+						}
+						else {
+							break;
+						}
+					}
+				}
+				else {
+					if (flag2 == 0 && x) {
+						y--;
+						x = 0;
+					}
+					else if (flag2 == 1) {
+						y = -1;
+					}
+					else if (flag2 == 2) {
+						if (size < 2) {
+							Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+						}
+						y -= *inputArray++;
+						x += *inputArray++;
+						if (y < 0) {
+							Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_COMPRESSION_ERROR);
+						}
+						size -= 2;
+					}
+					else {
+						uint8_t bytes = (flag2 + 1) / 2;
+						uint8_t pad = bytes % 2;
+						if (size < bytes) {
+							Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+						}
+						size -= bytes;
+						if ((y * _width + _width - x) < flag2) {
+							Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_IO_READ_BEYOND_BUFFER);
+						}
+						while (flag2--) {
+							uint8_t index1 = (*inputArray) >> 4;
+							uint8_t index2 = (*inputArray++) & 0xf;
+							pixelArray[y * _width + x++] = index1;
+							if (x >= _width) {
+								y--;
+								x = 0;
+							}
+							if (flag2--) {
+								pixelArray[y * _width + x++] = index2;
+								if (x >= _width) {
+									y--;
+									x = 0;
+								}
+							}
+							else {
+								break;
+							}
+						}
+						inputArray += pad;
+						size -= pad;
+					}
+				}
+				if (x >= _width) {
+					Exceptions::ERROR(Exceptions::INVALID_FORMAT, Exceptions::ERROR_BMP_COMPRESSION_ERROR);
+				}
+				if (y < 0) {
+					break;
+				}
+			}
 		}
 	}
 	else {
