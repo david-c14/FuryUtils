@@ -6,15 +6,32 @@
 #include "Dat.cpp"
 #include "Exceptions.cpp"
 
+std::string GetFileName(const std::string &s) {
+
+	char sep = '/';
+
+#ifdef _WIN32
+	sep = '\\';
+#endif
+
+	size_t i = s.rfind(sep, s.length());
+	if (i != std::string::npos) {
+		return(s.substr(i + 1, s.length() - i));
+	}
+
+	return(s);
+}
+
 int Usage(char *arg0) {
-	printf("%s usage:\n\n", arg0);
-	printf("\tThis Message                : %s -?\n", arg0);
-	printf("\tList entries                : %s -l datfile\n", arg0);
-	printf("\tList entries in brief form  : %s -b datfile\n", arg0);
-	printf("\tExtract entry               : %s -x datfile entry\n", arg0);
-	printf("\tExtract all entries         : %s -X datfile\n", arg0);
-	printf("\tCreate a compressed file    : %s -c datfile entry [...]", arg0);
-	printf("\tCreate an uncompressed file : %s -u datfile entry [...]", arg0);
+	std::string name = GetFileName(arg0);
+	printf("%s usage:\n\n", name.c_str());
+	printf("\tThis Message                : %s -?\n", name.c_str());
+	printf("\tList entries                : %s -l datfile\n", name.c_str());
+	printf("\tList entries in brief form  : %s -b datfile\n", name.c_str());
+	printf("\tExtract entry               : %s -x datfile entry\n", name.c_str());
+	printf("\tExtract all entries         : %s -X datfile\n", name.c_str());
+	printf("\tCreate a compressed file    : %s -c datfile entry [...]", name.c_str());
+	printf("\tCreate an uncompressed file : %s -u datfile entry [...]", name.c_str());
 	printf("\n");
 	return 0;
 }
@@ -202,23 +219,6 @@ int ExtractAll(int argc, char* argv[]) {
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
-}
-
-
-std::string GetFileName(const std::string &s) {
-
-	char sep = '/';
-
-#ifdef _WIN32
-	sep = '\\';
-#endif
-
-	size_t i = s.rfind(sep, s.length());
-	if (i != std::string::npos) {
-		return(s.substr(i + 1, s.length() - i));
-	}
-
-	return(s);
 }
 
 int Create(int argc, char* argv[], bool compress) {

@@ -5,9 +5,9 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 TEST_MODULE_INITIALIZE(moduleInitialize) {
-	utils::Util::Init();
+	utils::Util::ModuleInit("./cliTests");
 }
 
 TEST_MODULE_CLEANUP(moduleCleanup) {
-	utils::Util::Cleanup();
+	utils::Util::ModuleCleanup();
 }

@@ -4,11 +4,28 @@
 #include "Bmp.cpp"
 #include "Exceptions.cpp"
 
+std::string GetFileName(const std::string &s) {
+
+	char sep = '/';
+
+#ifdef _WIN32
+	sep = '\\';
+#endif
+
+	size_t i = s.rfind(sep, s.length());
+	if (i != std::string::npos) {
+		return(s.substr(i + 1, s.length() - i));
+	}
+
+	return(s);
+}
+
 int Usage(char *arg0) {
-	printf("%s usage:\n\n", arg0);
-	printf("\tThis Message                : %s -?\n", arg0);
-	printf("\tConvert IMM/PAM to BMP      : %s -ib immfile pamfile bmpfile\n", arg0);
-	printf("\tConvert BMP to IMM/PAM      : %s -bi bmpfile immfile pamfile\n", arg0);
+	std::string name = GetFileName(arg0);
+	printf("%s usage:\n\n", name.c_str());
+	printf("\tThis Message                : %s -?\n", name.c_str());
+	printf("\tConvert IMM/PAM to BMP      : %s -ib immfile pamfile bmpfile\n", name.c_str());
+	printf("\tConvert BMP to IMM/PAM      : %s -bi bmpfile immfile pamfile\n", name.c_str());
 	printf("\n");
 	return 0;
 }

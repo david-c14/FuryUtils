@@ -29,6 +29,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{38C09BF5-D2A6-4B6D-96C0-99D60A914606}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommandLine_Tests", "CommandLine_Tests\CommandLine_Tests.vcxproj", "{F63F30DF-7086-4974-B4F2-B0C50694BA68}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9916DE3F-A689-4DEA-A406-1BBB2D7D8F4C} = {9916DE3F-A689-4DEA-A406-1BBB2D7D8F4C}
+		{5AA3007C-8027-466F-AD3A-7BB3C42413BF} = {5AA3007C-8027-466F-AD3A-7BB3C42413BF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
