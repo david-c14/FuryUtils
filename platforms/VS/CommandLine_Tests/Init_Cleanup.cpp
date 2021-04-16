@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "utils.hpp"
+#include "clitest.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 TEST_MODULE_INITIALIZE(moduleInitialize) {
-	utils::Util::ModuleInit("./cliTests");
+	clitest::CLITest::ModuleInit("./cliTests");
 }
 
 TEST_MODULE_CLEANUP(moduleCleanup) {
-	utils::Util::ModuleCleanup();
+	clitest::CLITest::ModuleCleanup();
 }

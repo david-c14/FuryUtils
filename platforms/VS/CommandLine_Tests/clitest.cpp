@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "utils.hpp"
+#include "clitest.hpp"
 #include <Windows.h>
 #include <array>
 #include <chrono>
@@ -9,7 +9,7 @@
 #include <fstream>
 #include "CppUnitTestLogger.h"
 
-namespace utils {
+namespace clitest {
 	std::filesystem::path moduleDir;
 
 	std::string getGUID()
@@ -42,7 +42,7 @@ namespace utils {
 		return std::string(buffer.data());
 	}
 
-	void Util::ModuleInit(std::string initTestDir) {
+	void CLITest::ModuleInit(std::string initTestDir) {
 		moduleDir = std::filesystem::absolute(initTestDir);
 		if (!std::filesystem::exists(moduleDir)) {
 			std::filesystem::create_directory(moduleDir);
@@ -52,7 +52,7 @@ namespace utils {
 
 	}
 
-	void Util::ModuleCleanup() {
+	void CLITest::ModuleCleanup() {
 		if (moduleDir == "") {
 			return;
 		}
@@ -64,7 +64,7 @@ namespace utils {
 		}
 	}
 
-	Util::Util(const std::string & testName) {
+	CLITest::CLITest(const std::string & testName) {
 		_testName = testName;
 		testDir = moduleDir;
 		testDir.append(testName + "_" + getGUID());
@@ -72,66 +72,70 @@ namespace utils {
 		cleaned = false;
 	}
 
-	Util::~Util() {
+	CLITest::~CLITest() {
 		if (!cleaned) {
 			_testName.append(" was not cleaned up");
 			Microsoft::VisualStudio::CppUnitTestFramework::Logger::WriteMessage(_testName.c_str());
 		}
 	}
 
-	void Util::TestCleanup() {
+	void CLITest::TestCleanup() {
 		std::filesystem::remove_all(testDir);
 		cleaned = true;
 	}
 
+	int CLITest::Error() {
+		return _error;
+	}
+
 #undef CopyFile
 
-	void Util::CopyFile(const std::filesystem::path & sourceFile) {
+	void CLITest::CopyFile(const std::filesystem::path & sourceFile) {
 		CopyFile(sourceFile, testDir / sourceFile.filename());
 	}
 
-	void Util::CopyFile(const std::filesystem::path & sourceFile, const std::filesystem::path & destinationFile) {
+	void CLITest::CopyFile(const std::filesystem::path & sourceFile, const std::filesystem::path & destinationFile) {
 		std::filesystem::path _dest = testDir / destinationFile;
 		std::filesystem::path _src = std::filesystem::absolute(sourceFile);
 		std::filesystem::copy_file(_src, _dest);
 	}
 
-	int Util::Run(const std::string & commandLine) {
+	int CLITest::Run(const std::string & commandLine) {
 		std::filesystem::path cp = std::filesystem::current_path();
-		int retval = -1;
+		_error = -1;
 		try {
 			std::filesystem::current_path(testDir);
-			retval = std::system(commandLine.c_str());
+			_error = std::system(commandLine.c_str());
 		}
 		catch (...) {
 		}
 		std::filesystem::current_path(cp);
-		return retval;
+		return _error;
 	}
 
-	bool Util::Compare(const std::filesystem::path & sourceFile, const std::filesystem::path & destinationFile) {
+	bool CLITest::Compare(const std::filesystem::path & sourceFile, const std::filesystem::path & destinationFile) {
 		std::filesystem::path _src = testDir / sourceFile;
 		std::filesystem::path _dest = testDir / destinationFile;
 		return ReadFile(_src.generic_string()) == ReadFile(_dest.generic_string());
 	}
 
-	bool Util::Content(const std::filesystem::path & sourceFile, const std::string & content) {
+	bool CLITest::Content(const std::filesystem::path & sourceFile, const std::string & content) {
 		std::filesystem::path _src = testDir / sourceFile;
 		std::vector<uint8_t> vec(content.length());
 		memcpy(vec.data(), content.c_str(), vec.size());
 		return ReadText(_src.generic_string()) == vec;
 	}
 
-	bool Util::Exists(const std::filesystem::path & sourceFile) {
+	bool CLITest::Exists(const std::filesystem::path & sourceFile) {
 		return std::filesystem::exists(testDir / sourceFile);
 	}
 
-	bool Util::IsEmpty(const std::filesystem::path & sourceFile) {
+	bool CLITest::IsEmpty(const std::filesystem::path & sourceFile) {
 		return std::filesystem::is_empty(testDir / sourceFile);
 	}
 
 
-	std::vector<uint8_t> Util::ReadFile(const std::string & fileName) {
+	std::vector<uint8_t> CLITest::ReadFile(const std::string & fileName) {
 		std::ifstream file(fileName, std::ios::binary | std::ios::ate);
 
 		std::streamsize size = file.tellg();
@@ -143,7 +147,7 @@ namespace utils {
 		return buffer;
 	}
 
-	std::vector<uint8_t> Util::ReadText(const std::string & fileName) {
+	std::vector<uint8_t> CLITest::ReadText(const std::string & fileName) {
 		std::ifstream file(fileName, std::ios::ate);
 
 		std::streamsize size = file.tellg();

@@ -1,0 +1,6 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define CLITEST_BEGIN(methodName) TEST_METHOD(methodName) { clitest::CLITest clitest(#methodName);
+#define CLITEST_END clitest.TestCleanup(); }
+#define ADDFILE(fileName) clitest.CopyFile(fileName);
