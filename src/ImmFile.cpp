@@ -34,11 +34,12 @@ int ImmToBmp(int argc, char* argv[]) {
 	if (argc != 5) {
 		return Usage(argv[0]);
 	}
+	std::string name = GetFileName(argv[0]);
 	try
 	{
 		std::ifstream immFile(argv[2], std::ios::binary | std::ios::ate);
 		if (!immFile) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = immFile.tellg();
@@ -47,13 +48,13 @@ int ImmToBmp(int argc, char* argv[]) {
 		std::vector<uint8_t> immBuffer((uint32_t)size);
 		if (!immFile.read((char *)(immBuffer.data()), size))
 		{
-			printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
+			printf("%s Error:\n\nFile \"%s\" could not be read\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 
 		std::ifstream pamFile(argv[3], std::ios::binary | std::ios::ate);
 		if (!pamFile) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[3]);
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[3]);
 			return Exceptions::IO_ERROR;
 		}
 		size = pamFile.tellg();
@@ -62,7 +63,7 @@ int ImmToBmp(int argc, char* argv[]) {
 		std::vector<uint8_t> pamBuffer((uint32_t)size);
 		if (!pamFile.read((char *)(pamBuffer.data()), size))
 		{
-			printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[3]);
+			printf("%s Error:\n\nFile \"%s\" could not be read\n", name.c_str(), argv[3]);
 			return Exceptions::IO_ERROR;
 		}
 
@@ -76,14 +77,14 @@ int ImmToBmp(int argc, char* argv[]) {
 			outFile.write((char *)(outBuffer.data()), outBuffer.size());
 		}
 		else {
-			printf("%s Error: Could not write output file \"%s\"\n", argv[0], argv[4]);
+			printf("%s Error: Could not write output file \"%s\"\n", name.c_str(), argv[4]);
 			return Exceptions::IO_ERROR;
 		}
 		return 0;
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
+		printf("%s Error:\n\n%d %s\n", name.c_str(), e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -93,11 +94,12 @@ int BmpToImm(int argc, char* argv[]) {
 	if (argc != 5) {
 		return Usage(argv[0]);
 	}
+	std::string name = GetFileName(argv[0]);
 	try
 	{
 		std::ifstream bmpFile(argv[2], std::ios::binary | std::ios::ate);
 		if (!bmpFile) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = bmpFile.tellg();
@@ -106,7 +108,7 @@ int BmpToImm(int argc, char* argv[]) {
 		std::vector<uint8_t> bmpBuffer((uint32_t)size);
 		if (!bmpFile.read((char *)(bmpBuffer.data()), size))
 		{
-			printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
+			printf("%s Error:\n\nFile \"%s\" could not be read\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 
@@ -120,7 +122,7 @@ int BmpToImm(int argc, char* argv[]) {
 			immFile.write((char *)(immBuffer.data()), immBuffer.size());
 		}
 		else {
-			printf("%s Error: Could not write output file \"%s\"\n", argv[0], argv[3]);
+			printf("%s Error: Could not write output file \"%s\"\n", name.c_str(), argv[3]);
 			return Exceptions::IO_ERROR;
 		}
 
@@ -132,7 +134,7 @@ int BmpToImm(int argc, char* argv[]) {
 			pamFile.write((char *)(pamBuffer.data()), pamBuffer.size());
 		}
 		else {
-			printf("%s Error: Could not write output file \"%s\"\n", argv[0], argv[4]);
+			printf("%s Error: Could not write output file \"%s\"\n", name.c_str(), argv[4]);
 			return Exceptions::IO_ERROR;
 		}
 
@@ -140,7 +142,7 @@ int BmpToImm(int argc, char* argv[]) {
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
+		printf("%s Error:\n\n%d %s\n", name.c_str(), e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -159,6 +161,6 @@ int main(int argc, char* argv[]) {
 	if (!strncmp(argv[1], "-bi", 3)) {
 		return BmpToImm(argc, argv);
 	}
-	return 0;
+	return Usage(argv[0]);
 }
 

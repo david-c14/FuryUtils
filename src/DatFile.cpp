@@ -40,11 +40,12 @@ int List(int argc, char* argv[]) {
 	if (argc != 3) {
 		return Usage(argv[0]);
 	}
+	std::string name = GetFileName(argv[0]);
 	try
 	{
 		std::ifstream file(argv[2], std::ios::binary | std::ios::ate);
 		if (!file) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = file.tellg();
@@ -55,7 +56,7 @@ int List(int argc, char* argv[]) {
 		{
 			Dat df(buffer);
 			DatHeader *dfh;
-			printf("%s: Contents of %s\n\n", argv[0], argv[2]);
+			printf("%s: Contents of %s\n\n", name.c_str(), argv[2]);
 			printf("  Filename     Compressed   Uncompressed\n");
 			printf("------------  ------------  ------------\n");
 			while (dfh = df.Next()) {
@@ -63,12 +64,12 @@ int List(int argc, char* argv[]) {
 			}
 			return 0;
 		}
-		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
+		printf("%s Error:\n\nFile \"%s\" could not be read\n", name.c_str(), argv[2]);
 		return Exceptions::IO_ERROR;
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
+		printf("%s Error:\n\n%d %s\n", name.c_str(), e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -78,11 +79,12 @@ int Brief(int argc, char* argv[]) {
 	if (argc != 3) {
 		return Usage(argv[0]);
 	}
+	std::string name = GetFileName(argv[0]);
 	try
 	{
 		std::ifstream file(argv[2], std::ios::binary | std::ios::ate);
 		if (!file) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = file.tellg();
@@ -98,12 +100,12 @@ int Brief(int argc, char* argv[]) {
 			}
 			return 0;
 		}
-		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
+		printf("%s Error:\n\nFile \"%s\" could not be read\n", name.c_str(), argv[2]);
 		return Exceptions::IO_ERROR;
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
+		printf("%s Error:\n\n%d %s\n", name.c_str(), e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -113,11 +115,12 @@ int Extract(int argc, char* argv[]) {
 	if (argc != 4) {
 		return Usage(argv[0]);
 	}
+	std::string name = GetFileName(argv[0]);
 	try
 	{
 		std::ifstream file(argv[2], std::ios::binary | std::ios::ate);
 		if (!file) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = file.tellg();
@@ -129,7 +132,7 @@ int Extract(int argc, char* argv[]) {
 			Dat df(buffer);
 			DatHeader *dfh;
 #ifndef LOGGING
-			printf("%s: Extracting \"%s\" from \"%s\"\n\n", argv[0], argv[3], argv[2]);
+			printf("%s: Extracting \"%s\" from \"%s\"\n\n", name.c_str(), argv[3], argv[2]);
 #endif
 			while (dfh = df.Next()) {
 				if (strncmp(argv[3], dfh->FileName, 12)) {
@@ -150,20 +153,20 @@ int Extract(int argc, char* argv[]) {
 					outFile.write((char *)(uncompressedBuffer.data()), uncompressedBuffer.size());
 				}
 				else {
-					printf("%s Error: Could not write file \"%s\"\n", argv[0], dfh->FileName);
+					printf("%s Error: Could not write file \"%s\"\n", name.c_str(), dfh->FileName);
 					return Exceptions::IO_ERROR;
 				}
 				return 0;
 			}
-			printf("%s Error: \"%s\" not found in \"%s\"\n", argv[0], argv[3], argv[2]);
+			printf("%s Error: \"%s\" not found in \"%s\"\n", name.c_str(), argv[3], argv[2]);
 			return Exceptions::INDEX_OUT_OF_RANGE;
 		}
-		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
+		printf("%s Error:\n\nFile \"%s\" could not be read\n", name.c_str(), argv[2]);
 		return Exceptions::IO_ERROR;
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
+		printf("%s Error:\n\n%d %s\n", name.c_str(), e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -173,11 +176,12 @@ int ExtractAll(int argc, char* argv[]) {
 	if (argc != 3) {
 		return Usage(argv[0]);
 	}
+	std::string name = GetFileName(argv[0]);
 	try
 	{
 		std::ifstream file(argv[2], std::ios::binary | std::ios::ate);
 		if (!file) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", argv[0], argv[2]);
+			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = file.tellg();
@@ -189,7 +193,7 @@ int ExtractAll(int argc, char* argv[]) {
 			Dat df(buffer);
 			DatHeader *dfh;
 #ifndef LOGGING
-			printf("%s: Extracting all entries from \"%s\"\n\n", argv[0], argv[2]);
+			printf("%s: Extracting all entries from \"%s\"\n\n", name.c_str(), argv[2]);
 #endif
 			while (dfh = df.Next()) {
 				if (dfh->IsNotCompressed) {
@@ -205,17 +209,17 @@ int ExtractAll(int argc, char* argv[]) {
 					outFile.write((char *)(uncompressedBuffer.data()), uncompressedBuffer.size());
 				}
 				else {
-					printf("%s Error: Could not write file \"%s\"\n", argv[0], dfh->FileName);
+					printf("%s Error: Could not write file \"%s\"\n", name.c_str(), dfh->FileName);
 				}
 			}
 			return 0;
 		}
-		printf("%s Error:\n\nFile \"%s\" could not be read\n", argv[0], argv[2]);
+		printf("%s Error:\n\nFile \"%s\" could not be read\n", name.c_str(), argv[2]);
 		return Exceptions::IO_ERROR;
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
+		printf("%s Error:\n\n%d %s\n", name.c_str(), e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -225,12 +229,12 @@ int Create(int argc, char* argv[], bool compress) {
 	if (argc < 4) {
 		return Usage(argv[0]);
 	}
-
+	std::string name = GetFileName(argv[0]);
 	try {
 		Dat df;
 
 #ifndef LOGGING
-		printf("%s: creating %s archive %s\n\n", argv[0], compress ? "compressed" : "uncompressed", argv[2]);
+		printf("%s: creating %s archive %s\n\n", name.c_str(), compress ? "compressed" : "uncompressed", argv[2]);
 #endif
 		for (int i = 3; i < argc; i++) {
 			std::string path = argv[i];
@@ -238,7 +242,7 @@ int Create(int argc, char* argv[], bool compress) {
 
 			std::ifstream file(argv[i], std::ios::binary | std::ios::ate);
 			if (!file) {
-				printf("%s Error:\n\n Input file \"%s\" could not be opened\n", argv[0], filename.c_str());
+				printf("%s Error:\n\n Input file \"%s\" could not be opened\n", name.c_str(), filename.c_str());
 				return Exceptions::IO_ERROR;
 			}
 			std::streamsize size = file.tellg();
@@ -258,7 +262,7 @@ int Create(int argc, char* argv[], bool compress) {
 #endif
 			}
 			else {
-				printf("%s Error:\n\n Input file \"%s\" could not be read\n", argv[0], filename.c_str());
+				printf("%s Error:\n\n Input file \"%s\" could not be read\n", name.c_str(), filename.c_str());
 			}
 		}
 		std::ofstream outFile(argv[2], std::ios::binary | std::ios::trunc);
@@ -268,14 +272,14 @@ int Create(int argc, char* argv[], bool compress) {
 			outFile.write((char *)(buffer.data()), buffer.size());
 		}
 		else {
-			printf("%s Error: Could not write output file \"%s\"\n", argv[0], argv[2]);
+			printf("%s Error: Could not write output file \"%s\"\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		return 0;
 	}
 	catch (Exceptions::Exception e)
 	{
-		printf("%s Error:\n\n%d %s\n", argv[0], e._errorCode, e._errorString.c_str());
+		printf("%s Error:\n\n%d %s\n", name.c_str(), e._errorCode, e._errorString.c_str());
 		return e._errorCode;
 	}
 	return Exceptions::UNKNOWN_ERROR;
@@ -306,5 +310,5 @@ int main(int argc, char* argv[]) {
 	if (!strncmp(argv[1], "-u", 2)) {
 		return Create(argc, argv, false);
 	}
-	return 0;
+	return Usage(argv[0]);
 }

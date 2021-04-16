@@ -36,6 +36,14 @@ namespace clitest {
 		std::vector<uint8_t> ReadText(const std::string & fileName);
 	};
 
+#ifndef CLITEST_STDOUT
+#define CLITEST_STDOUT "out.txt"
+#endif
+
+#ifndef CLITEST_STDERR
+#define CLITEST_STDERR "err.txt"
+#endif
+
 #define CLITEST_BEGIN(methodName) TEST_METHOD(methodName) {\
 	clitest::CLITest clitest(#methodName);
 
@@ -43,7 +51,7 @@ namespace clitest {
 
 #define ADDFILE(fileName) clitest.CopyFile(fileName);
 
-#define EXEC(commandLine) clitest.Run(commandLine " > out.txt 2> err.txt");
+#define EXEC(commandLine) clitest.Run(commandLine " > " CLITEST_STDOUT " 2> " CLITEST_STDERR);
 
 #define RETURNVALUE(expected) Assert::AreEqual(expected, clitest.Error(), L"Return value should be " L#expected);
 

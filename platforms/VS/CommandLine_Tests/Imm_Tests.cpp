@@ -25,8 +25,81 @@ namespace Imm_Tests
 			EXEC(CD "ImmFile")
 
 			RETURNVALUE(0)
-			ISEMPTY("err.txt")
-			FILECONTENT("out.txt", usage)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, usage)
+		CLITEST_END
+
+		CLITEST_BEGIN(Query_parameter_should_yield_usage_message)
+			ADDFILE(DEBUG "ImmFile.exe")
+
+			EXEC(CD "ImmFile -?")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, usage)
+		CLITEST_END
+
+		CLITEST_BEGIN(Unknown_parameter_should_yield_usage_message)
+			ADDFILE(DEBUG "ImmFile.exe")
+
+			EXEC(CD "ImmFile -k")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, usage)
+			CLITEST_END
+
+			CLITEST_BEGIN(too_few_bi_parameters_should_yield_usage_message)
+			ADDFILE(DEBUG "ImmFile.exe")
+
+			EXEC(CD "ImmFile -bi file1 file2")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, usage)
+		CLITEST_END
+
+		CLITEST_BEGIN(too_few_ib_parameters_should_yield_usage_message)
+			ADDFILE(DEBUG "ImmFile.exe")
+
+			EXEC(CD "ImmFile -ib file1 file2")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, usage)
+		CLITEST_END
+
+		CLITEST_BEGIN(too_many_bi_parameters_should_yield_usage_message)
+			ADDFILE(DEBUG "ImmFile.exe")
+
+			EXEC(CD "ImmFile -bi file1 file2 file3 file4")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, usage)
+		CLITEST_END
+
+		CLITEST_BEGIN(too_many_ib_parameters_should_yield_usage_message)
+			ADDFILE(DEBUG "ImmFile.exe")
+
+			EXEC(CD "ImmFile -ib file1 file2 file3 file4")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, usage)
+		CLITEST_END
+
+		CLITEST_BEGIN(unsupported_file_should_raise_exception)
+			std::string error = "ImmFile Error:\n\n"
+				"1 Compressed data contains an error\n";
+			ADDFILE(ASSETS "badrle.bmp")
+			ADDFILE(DEBUG "ImmFile.exe")
+
+			EXEC(CD "ImmFile -bi badrle.bmp file2 file3")
+
+			RETURNVALUE(1)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, error)
 		CLITEST_END
 
 		CLITEST_BEGIN(Convert_a_bmp_to_imm_and_pam)
@@ -42,8 +115,8 @@ namespace Imm_Tests
 			EXISTS("out.pam")
 			FILECOMPARE("pal8out.imm", "out.imm")
 			FILECOMPARE("pal8out.pam", "out.pam")
-			ISEMPTY("out.txt")
-			ISEMPTY("err.txt")
+			ISEMPTY(CLITEST_STDOUT)
+			ISEMPTY(CLITEST_STDERR)
 		CLITEST_END
 
 		CLITEST_BEGIN(Convert_an_imm_and_pam_to_bmp)
@@ -57,8 +130,8 @@ namespace Imm_Tests
 			RETURNVALUE(0)
 			EXISTS("out.bmp")
 			FILECOMPARE("pal8qnt.bmp", "out.bmp")
-			ISEMPTY("out.txt")
-			ISEMPTY("err.txt")
+			ISEMPTY(CLITEST_STDOUT)
+			ISEMPTY(CLITEST_STDERR)
 		CLITEST_END
 
 	};
