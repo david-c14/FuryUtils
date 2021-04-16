@@ -44,6 +44,19 @@ namespace clitest {
 #define CLITEST_STDERR "err.txt"
 #endif
 
+#ifndef ASSETS
+#define ASSETS "../../../testassets/"
+#endif 
+
+#ifndef BUILD
+#define BUILD "./"
+#endif
+
+#ifndef CD
+#define CD ".\\"
+#endif
+
+
 #define CLITEST_BEGIN(methodName) TEST_METHOD(methodName) {\
 	clitest::CLITest clitest(#methodName);
 

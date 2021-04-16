@@ -4,10 +4,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define ASSETS "../../../testassets/"
-#define DEBUG "./"
-#define CD ".\\"
-
 namespace Imm_Tests
 {
 	TEST_CLASS(Imm_Tests)
@@ -20,7 +16,7 @@ namespace Imm_Tests
 			"\tConvert BMP to IMM/PAM      : ImmFile -bi bmpfile immfile pamfile\n\n";
 
 		CLITEST_BEGIN(No_parameters_should_yield_usage_message)
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile")
 
@@ -30,7 +26,7 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(Query_parameter_should_yield_usage_message)
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -?")
 
@@ -40,7 +36,7 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(Unknown_parameter_should_yield_usage_message)
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -k")
 
@@ -50,7 +46,7 @@ namespace Imm_Tests
 			CLITEST_END
 
 			CLITEST_BEGIN(too_few_bi_parameters_should_yield_usage_message)
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -bi file1 file2")
 
@@ -60,7 +56,7 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(too_few_ib_parameters_should_yield_usage_message)
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -ib file1 file2")
 
@@ -70,7 +66,7 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(too_many_bi_parameters_should_yield_usage_message)
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -bi file1 file2 file3 file4")
 
@@ -80,7 +76,7 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(too_many_ib_parameters_should_yield_usage_message)
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -ib file1 file2 file3 file4")
 
@@ -93,7 +89,7 @@ namespace Imm_Tests
 			std::string error = "ImmFile Error:\n\n"
 				"1 Compressed data contains an error\n";
 			ADDFILE(ASSETS "badrle.bmp")
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -bi badrle.bmp file2 file3")
 
@@ -106,7 +102,7 @@ namespace Imm_Tests
 			ADDFILE(ASSETS "pal8out.bmp")
 			ADDFILE(ASSETS "pal8out.imm")
 			ADDFILE(ASSETS "pal8out.pam")
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 			
 			EXEC(CD "ImmFile -bi pal8out.bmp out.imm out.pam")
 
@@ -123,7 +119,7 @@ namespace Imm_Tests
 			ADDFILE(ASSETS "pal8qnt.bmp")
 			ADDFILE(ASSETS "pal8out.imm")
 			ADDFILE(ASSETS "pal8out.pam")
-			ADDFILE(DEBUG "ImmFile.exe")
+			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -ib pal8out.imm pal8out.pam out.bmp")
 
