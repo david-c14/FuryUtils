@@ -88,12 +88,89 @@ namespace Imm_Tests
 		CLITEST_BEGIN(unsupported_file_should_raise_exception)
 			std::string error = "ImmFile Error:\n\n"
 				"1 Compressed data contains an error\n";
-			ADDFILE(ASSETS "badrle.bmp")
+		ADDFILE(ASSETS "badrle.bmp")
 			ADDFILE(BUILD "ImmFile.exe")
 
 			EXEC(CD "ImmFile -bi badrle.bmp file2 file3")
 
 			RETURNVALUE(1)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, error)
+		CLITEST_END
+
+		CLITEST_BEGIN(missing_input_file_on_bi_should_raise_IO_ERROR)
+			std::string error = "ImmFile Error:\n\n"
+				"File \"missing.bmp\" could not be opened\n";
+			ADDFILE(BUILD "ImmFile.exe")
+
+			EXEC(CD "ImmFile -bi missing.bmp file2 file3")
+
+			RETURNVALUE(6)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, error)
+		CLITEST_END
+
+		CLITEST_BEGIN(invalid_output_file_on_bi_should_raise_IO_ERROR)
+			std::string error = "ImmFile Error:\n\n"
+				"Could not write output file \"garbage?\"\n";
+			ADDFILE(ASSETS "pal8out.bmp")
+			ADDFILE(BUILD "ImmFile.exe")
+
+			EXEC(CD "ImmFile -bi pal8out.bmp garbage? file3")
+
+			RETURNVALUE(6)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, error)
+		CLITEST_END
+				
+		CLITEST_BEGIN(invalid_output_file2_on_bi_should_raise_IO_ERROR)
+			std::string error = "ImmFile Error:\n\n"
+				"Could not write output file \"garbage2?\"\n";
+			ADDFILE(ASSETS "pal8out.bmp")
+			ADDFILE(BUILD "ImmFile.exe")
+
+			EXEC(CD "ImmFile -bi pal8out.bmp garbage garbage2?")
+
+			RETURNVALUE(6)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, error)
+		CLITEST_END
+
+		CLITEST_BEGIN(missing_input_file1_on_ib_should_raise_IO_ERROR)
+			std::string error = "ImmFile Error:\n\n"
+				"File \"missing.imm\" could not be opened\n";
+			ADDFILE(BUILD "ImmFile.exe")
+
+			EXEC(CD "ImmFile -ib missing.imm file2 file3")
+
+			RETURNVALUE(6)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, error)
+		CLITEST_END
+
+		CLITEST_BEGIN(missing_input_file2_on_ib_should_raise_IO_ERROR)
+			std::string error = "ImmFile Error:\n\n"
+				"File \"missing.pam\" could not be opened\n";
+			ADDFILE(ASSETS "pal8out.imm")
+			ADDFILE(BUILD "ImmFile.exe")
+
+			EXEC(CD "ImmFile -ib pal8out.imm missing.pam file3")
+
+			RETURNVALUE(6)
+			ISEMPTY(CLITEST_STDERR)
+			FILECONTENT(CLITEST_STDOUT, error)
+		CLITEST_END
+
+		CLITEST_BEGIN(invalid_output_file_on_ib_should_raise_IO_ERROR)
+			std::string error = "ImmFile Error:\n\n"
+				"Could not write output file \"garbage?\"\n";
+			ADDFILE(ASSETS "pal8out.imm")
+			ADDFILE(ASSETS "pal8out.pam")
+			ADDFILE(BUILD "ImmFile.exe")
+
+			EXEC(CD "ImmFile -ib pal8out.imm pal8out.pam garbage?")
+
+			RETURNVALUE(6)
 			ISEMPTY(CLITEST_STDERR)
 			FILECONTENT(CLITEST_STDOUT, error)
 		CLITEST_END

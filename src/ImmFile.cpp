@@ -39,7 +39,7 @@ int ImmToBmp(int argc, char* argv[]) {
 	{
 		std::ifstream immFile(argv[2], std::ios::binary | std::ios::ate);
 		if (!immFile) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
+			printf("%s Error:\n\nFile \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = immFile.tellg();
@@ -54,7 +54,7 @@ int ImmToBmp(int argc, char* argv[]) {
 
 		std::ifstream pamFile(argv[3], std::ios::binary | std::ios::ate);
 		if (!pamFile) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[3]);
+			printf("%s Error:\n\nFile \"%s\" could not be opened\n", name.c_str(), argv[3]);
 			return Exceptions::IO_ERROR;
 		}
 		size = pamFile.tellg();
@@ -77,7 +77,7 @@ int ImmToBmp(int argc, char* argv[]) {
 			outFile.write((char *)(outBuffer.data()), outBuffer.size());
 		}
 		else {
-			printf("%s Error: Could not write output file \"%s\"\n", name.c_str(), argv[4]);
+			printf("%s Error:\n\nCould not write output file \"%s\"\n", name.c_str(), argv[4]);
 			return Exceptions::IO_ERROR;
 		}
 		return 0;
@@ -99,7 +99,7 @@ int BmpToImm(int argc, char* argv[]) {
 	{
 		std::ifstream bmpFile(argv[2], std::ios::binary | std::ios::ate);
 		if (!bmpFile) {
-			printf("%s Error:\n\n File \"%s\" could not be opened\n", name.c_str(), argv[2]);
+			printf("%s Error:\n\nFile \"%s\" could not be opened\n", name.c_str(), argv[2]);
 			return Exceptions::IO_ERROR;
 		}
 		std::streamsize size = bmpFile.tellg();
@@ -122,7 +122,7 @@ int BmpToImm(int argc, char* argv[]) {
 			immFile.write((char *)(immBuffer.data()), immBuffer.size());
 		}
 		else {
-			printf("%s Error: Could not write output file \"%s\"\n", name.c_str(), argv[3]);
+			printf("%s Error:\n\nCould not write output file \"%s\"\n", name.c_str(), argv[3]);
 			return Exceptions::IO_ERROR;
 		}
 
@@ -134,7 +134,7 @@ int BmpToImm(int argc, char* argv[]) {
 			pamFile.write((char *)(pamBuffer.data()), pamBuffer.size());
 		}
 		else {
-			printf("%s Error: Could not write output file \"%s\"\n", name.c_str(), argv[4]);
+			printf("%s Error:\n\nCould not write output file \"%s\"\n", name.c_str(), argv[4]);
 			return Exceptions::IO_ERROR;
 		}
 
