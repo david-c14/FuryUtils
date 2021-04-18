@@ -16,51 +16,17 @@ void Dat::Uncompress(std::vector<uint8_t> &inputBuffer, uint32_t uncompressedSiz
 	uint32_t outputOffset = 0;
 	uint8_t compressionBits;
 	uint8_t compressionBitCount = 0;
-#ifdef LOGGING
-	uint8_t frame[17];
-	uint8_t frameLength = 0;
-	uint32_t frameOffset = 0;
-	uint32_t originalOffset = 0;
-#endif
 	while (outputOffset < uncompressedSize) {
 		if (!compressionBitCount) {
 			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
 			compressionBits = BinaryIO::ReadUInt8(inputBuffer, inputOffset);
 			compressionBitCount = 8;
-#ifdef LOGGING
-			if (inputOffset > 1) {
-				printf("    ");
-				for (unsigned int i = 0; i < frameLength; i++) {
-					printf("%02hhx-", frame[i]);
-				}
-				printf("  ");
-				for (unsigned int i = 1; i < frameLength; i++) {
-					if (frame[i] < 32) {
-						printf("_");
-					}
-					else if (frame[i] > 126) {
-						printf("_");
-					}
-					else {
-						printf("%c", (frame[i]));
-					}
-				}
-				printf("\n");
-			}
-			frameLength = 0;
-			frameOffset = inputOffset;
-			frame[frameLength++] = compressionBits;
-#endif
 		}
 		bool uncompressed = compressionBits & 0x01;
 		compressionBitCount--;
 		compressionBits >>= 1;
 		if (uncompressed) {
 			BinaryIO::CheckSpace(inputBuffer, inputOffset, 1);
-#ifdef LOGGING
-			frame[frameLength++] = inputBuffer[inputOffset];
-			printf("  %08x  %08x                          %02hhx\n", inputOffset, outputOffset, inputBuffer[inputOffset]);
-#endif
 			outputBuffer[outputOffset++] = inputBuffer[inputOffset++];
 		}
 		else {
@@ -72,57 +38,21 @@ void Dat::Uncompress(std::vector<uint8_t> &inputBuffer, uint32_t uncompressedSiz
 				Exceptions::ERROR(Exceptions::BUFFER_OVERFLOW, Exceptions::ERROR_DAT_COMPRESSION_SIZE_MISMATCH);
 			}
 			int32_t offset = ((byte2 >> 4) << 8) + byte1;
-#ifdef LOGGING
-			originalOffset = offset;
-			frame[frameLength++] = byte1;
-			frame[frameLength++] = byte2;
-#endif
 			offset += 0x1012;
 			offset += (outputOffset & 0xfffff000);
 			while (offset >= (int32_t)outputOffset)
 				offset -= 0x1000;
-#ifdef LOGGING
-			printf("  %08x  %08x  %02d  %08x  %08x  ", inputOffset - 2, outputOffset, length, originalOffset, offset);
-#endif
 			while (length--) {
 				if (offset < 0) {
-#ifdef LOGGING
-					printf("20-");
-#endif
 					outputBuffer[outputOffset++] = ' ';
 				}
 				else {
-#ifdef LOGGING
-					printf("%02hhx-", outputBuffer[offset]);
-#endif
 					outputBuffer[outputOffset++] = outputBuffer[offset];
 				}
 				offset++;
 			}
-#ifdef LOGGING
-			printf("\n");
-#endif
 		}
 	}
-#ifdef LOGGING
-	printf("    ");
-	for (unsigned int i = 0; i < frameLength; i++) {
-		printf("%02hhx-", frame[i]);
-	}
-	printf("  ");
-	for (unsigned int i = 1; i < frameLength; i++) {
-		if (frame[i] < 32) {
-			printf("_");
-		}
-		else if (frame[i] > 126) {
-			printf("_");
-		}
-		else {
-			printf("%c", frame[i]);
-		}
-	}
-	printf("\n");
-#endif
 	outputBuffer.swap(inputBuffer);
 }
 
@@ -153,25 +83,6 @@ public:
 		if ((*outputOffset + frameLength) > originalLength) {
 			return false;
 		}
-#ifdef LOGGING
-		printf("    ");
-		for (unsigned int i = 0; i < frameLength; i++) {
-			printf("%02hhx-", frame[i]);
-		}
-		printf("  ");
-		for (unsigned int i = 1; i < frameLength; i++) {
-			if (frame[i] < 32) {
-				printf("_");
-			}
-			else if (frame[i] > 126) {
-				printf("_");
-			}
-			else {
-				printf("%c", (frame[i]));
-			}
-		}
-		printf("\n");
-#endif
 		memcpy(workingArray + *outputOffset, frame, frameLength);
 		*outputOffset += frameLength;
 		bitCount = 0;
@@ -257,13 +168,6 @@ void Dat::Compress(std::vector<uint8_t> &originalBuffer) {
 		frame[0] >>= 1;
 		frame[0] &= 0x7f;
 		if (foundLength > 2) {
-#ifdef LOGGING
-			printf("  %08x  %08x  %02d  %08x  %08x  ", outputOffset + frameLength, inputOffset - 18, foundLength, (foundOffset - 36) & 0xfff, (foundOffset - 18));
-			for (unsigned int i = 0; i < foundLength; i++) {
-				printf("%02hhx-", inputArray[foundOffset + i]);
-			}
-			printf("\n");
-#endif
 			inputOffset += foundLength;
 			foundLength -= 3;
 			foundOffset -= 36;
@@ -274,9 +178,6 @@ void Dat::Compress(std::vector<uint8_t> &originalBuffer) {
 			frame[frameLength++] = byte2;
 		}
 		else {
-#ifdef LOGGING
-			printf("  %08x  %08x                          %02hhx\n", outputOffset + frameLength, inputOffset - 18, inputArray[inputOffset]);
-#endif
 			frame[0] |= 0x80;
 			frame[frameLength++] = inputArray[inputOffset++];
 		}
@@ -285,25 +186,6 @@ void Dat::Compress(std::vector<uint8_t> &originalBuffer) {
 			if ((outputOffset + frameLength) > originalLength) {
 				return;
 			}
-#ifdef LOGGING
-			printf("    ");
-			for (unsigned int i = 0; i < frameLength; i++) {
-				printf("%02hhx-", frame[i]);
-			}
-			printf("  ");
-			for (unsigned int i = 1; i < frameLength; i++) {
-				if (frame[i] < 32) {
-					printf("_");
-				}
-				else if (frame[i] > 126) {
-					printf("_");
-				}
-				else {
-					printf("%c", (frame[i]));
-				}
-			}
-			printf("\n");
-#endif
 			memcpy(workingArray + outputOffset, frame, frameLength);
 			outputOffset += frameLength;
 			bitCount = 0;
@@ -318,25 +200,6 @@ void Dat::Compress(std::vector<uint8_t> &originalBuffer) {
 			frame[0] >>= 1;
 			bitCount++;
 		}
-#ifdef LOGGING
-		printf("    ");
-		for (unsigned int i = 0; i < frameLength; i++) {
-			printf("%02hhx-", frame[i]);
-		}
-		printf("  ");
-		for (unsigned int i = 1; i < frameLength; i++) {
-			if (frame[i] < 32) {
-				printf("_");
-			}
-			else if (frame[i] > 126) {
-				printf("_");
-			}
-			else {
-				printf("%c", frame[i]);
-			}
-		}
-		printf("\n");
-#endif
 		memcpy(workingArray + outputOffset, frame, frameLength);
 		outputOffset += frameLength;
 	}
