@@ -251,7 +251,7 @@ void Dat::Add(const char *fileName, std::vector<uint8_t> &inputBuffer, bool comp
 	BinaryIO::WriteUInt16(fileBuffer, bufferOffset, ++entryCount);
 	bufferOffset = (uint32_t)(fileBuffer.size());
 	fileBuffer.resize(bufferOffset + sizeof(DatHeader) + entry.Header.CompressedSize);
-	entry.CompressedBufferOffset = bufferOffset;
+	entry.CompressedBufferOffset = bufferOffset + sizeof(DatHeader);
 	memcpy(fileBuffer.data() + bufferOffset, &(entry.Header), sizeof(DatHeader));
 	bufferOffset += sizeof(DatHeader);
 	memcpy(fileBuffer.data() + bufferOffset, inputBuffer.data(), entry.Header.CompressedSize);
@@ -271,7 +271,6 @@ DatHeader *Dat::Next() {
 	if (++entryIteration < entryCount) {
 		return &entries[entryIteration].Header;
 	}
-	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
 	return NULL;
 }
 
@@ -279,25 +278,27 @@ DatHeader *Dat::Header(uint32_t index) {
 	if (index < entryCount) {
 		return &entries[index].Header;
 	}
-	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
+	Exceptions::ERROR(Exceptions::INDEX_OUT_OF_RANGE);
 	return NULL;
 }
 
 bool Dat::Entry(std::vector<uint8_t> &inputBuffer) {
+	if (entryIteration == -1) {
+		return false;
+	}
 	if (entryIteration < entryCount) {
 		InternalEntry(inputBuffer, entryIteration);
 		return true;
 	}
-	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
 	return false;
 }
 
 bool Dat::Entry(uint16_t index, std::vector<uint8_t> &inputBuffer) {
 	if (index < entryCount) {
-		InternalEntry(inputBuffer, entryIteration);
+		InternalEntry(inputBuffer, index);
 		return true;
 	}
-	ErrorCode = Exceptions::INDEX_OUT_OF_RANGE;
+	Exceptions::ERROR(Exceptions::INDEX_OUT_OF_RANGE);
 	return false;
 }
 
