@@ -52,8 +52,8 @@ namespace clitest {
 #define BUILD "./"
 #endif
 
-#ifndef CD
-#define CD ".\\"
+#ifndef PWD
+#define PWD ".\\"
 #endif
 
 
@@ -64,6 +64,8 @@ namespace clitest {
 
 #define ADDFILE(fileName) clitest.CopyFile(fileName);
 
+#define ADDFILEAS(filename, destination) clitest.CopyFile(filename, destination);
+
 #define EXEC(commandLine) clitest.Run(commandLine " > " CLITEST_STDOUT " 2> " CLITEST_STDERR);
 
 #define RETURNVALUE(expected) Assert::AreEqual(expected, clitest.Error(), L"Return value should be " L#expected);
@@ -72,7 +74,7 @@ namespace clitest {
 
 #define EXISTS(fileName) Assert::IsTrue(clitest.Exists(fileName), L#fileName L" should exist");
 
-#define FILECOMPARE(fileName1,fileName2) Assert::IsTrue(clitest.Compare(fileName1, fileName2), L"File content differs between" L#fileName1 L" and " L#fileName2);
+#define FILECOMPARE(fileName1, fileName2) Assert::IsTrue(clitest.Compare(fileName1, fileName2), L"File content differs between" L#fileName1 L" and " L#fileName2);
 
 #define FILECONTENT(fileName, content) Assert::IsTrue(clitest.Content(fileName, content), L#fileName L" content differs from expectation");
 

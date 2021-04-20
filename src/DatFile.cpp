@@ -30,8 +30,8 @@ int Usage(char *arg0) {
 	printf("\tList entries in brief form  : %s -b datfile\n", name.c_str());
 	printf("\tExtract entry               : %s -x datfile entry\n", name.c_str());
 	printf("\tExtract all entries         : %s -X datfile\n", name.c_str());
-	printf("\tCreate a compressed file    : %s -c datfile entry [...]", name.c_str());
-	printf("\tCreate an uncompressed file : %s -u datfile entry [...]", name.c_str());
+	printf("\tCreate a compressed file    : %s -c datfile entry [...]\n", name.c_str());
+	printf("\tCreate an uncompressed file : %s -u datfile entry [...]\n", name.c_str());
 	printf("\n");
 	return 0;
 }

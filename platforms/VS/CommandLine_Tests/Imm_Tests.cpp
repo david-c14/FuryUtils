@@ -4,6 +4,9 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+#define EXE BUILD "ImmFile.exe"
+#define COMM PWD "ImmFile"
+
 namespace Imm_Tests
 {
 	TEST_CLASS(Imm_Tests)
@@ -16,9 +19,9 @@ namespace Imm_Tests
 			"\tConvert BMP to IMM/PAM      : ImmFile -bi bmpfile immfile pamfile\n\n";
 
 		CLITEST_BEGIN(No_parameters_should_yield_usage_message)
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile")
+			EXEC(COMM)
 
 			RETURNVALUE(0)
 			ISEMPTY(CLITEST_STDERR)
@@ -26,9 +29,9 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(Query_parameter_should_yield_usage_message)
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -?")
+			EXEC(COMM " -?")
 
 			RETURNVALUE(0)
 			ISEMPTY(CLITEST_STDERR)
@@ -36,19 +39,19 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(Unknown_parameter_should_yield_usage_message)
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -k")
+			EXEC(COMM " -k")
 
 			RETURNVALUE(0)
 			ISEMPTY(CLITEST_STDERR)
 			FILECONTENT(CLITEST_STDOUT, usage)
-			CLITEST_END
+		CLITEST_END
 
-			CLITEST_BEGIN(too_few_bi_parameters_should_yield_usage_message)
-			ADDFILE(BUILD "ImmFile.exe")
+		CLITEST_BEGIN(too_few_bi_parameters_should_yield_usage_message)
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -bi file1 file2")
+			EXEC(COMM " -bi file1 file2")
 
 			RETURNVALUE(0)
 			ISEMPTY(CLITEST_STDERR)
@@ -56,9 +59,9 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(too_few_ib_parameters_should_yield_usage_message)
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -ib file1 file2")
+			EXEC(COMM " -ib file1 file2")
 
 			RETURNVALUE(0)
 			ISEMPTY(CLITEST_STDERR)
@@ -66,9 +69,9 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(too_many_bi_parameters_should_yield_usage_message)
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -bi file1 file2 file3 file4")
+			EXEC(COMM " -bi file1 file2 file3 file4")
 
 			RETURNVALUE(0)
 			ISEMPTY(CLITEST_STDERR)
@@ -76,9 +79,9 @@ namespace Imm_Tests
 		CLITEST_END
 
 		CLITEST_BEGIN(too_many_ib_parameters_should_yield_usage_message)
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -ib file1 file2 file3 file4")
+			EXEC(COMM " -ib file1 file2 file3 file4")
 
 			RETURNVALUE(0)
 			ISEMPTY(CLITEST_STDERR)
@@ -88,10 +91,10 @@ namespace Imm_Tests
 		CLITEST_BEGIN(unsupported_file_should_raise_exception)
 			std::string error = "ImmFile Error:\n\n"
 				"1 Compressed data contains an error\n";
-		ADDFILE(ASSETS "badrle.bmp")
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(ASSETS "badrle.bmp")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -bi badrle.bmp file2 file3")
+			EXEC(COMM " -bi badrle.bmp file2 file3")
 
 			RETURNVALUE(1)
 			ISEMPTY(CLITEST_STDERR)
@@ -101,9 +104,9 @@ namespace Imm_Tests
 		CLITEST_BEGIN(missing_input_file_on_bi_should_raise_IO_ERROR)
 			std::string error = "ImmFile Error:\n\n"
 				"File \"missing.bmp\" could not be opened\n";
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -bi missing.bmp file2 file3")
+			EXEC(COMM " -bi missing.bmp file2 file3")
 
 			RETURNVALUE(6)
 			ISEMPTY(CLITEST_STDERR)
@@ -114,9 +117,9 @@ namespace Imm_Tests
 			std::string error = "ImmFile Error:\n\n"
 				"Could not write output file \"garbage?\"\n";
 			ADDFILE(ASSETS "pal8out.bmp")
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -bi pal8out.bmp garbage? file3")
+			EXEC(COMM " -bi pal8out.bmp garbage? file3")
 
 			RETURNVALUE(6)
 			ISEMPTY(CLITEST_STDERR)
@@ -127,9 +130,9 @@ namespace Imm_Tests
 			std::string error = "ImmFile Error:\n\n"
 				"Could not write output file \"garbage2?\"\n";
 			ADDFILE(ASSETS "pal8out.bmp")
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -bi pal8out.bmp garbage garbage2?")
+			EXEC(COMM " -bi pal8out.bmp garbage garbage2?")
 
 			RETURNVALUE(6)
 			ISEMPTY(CLITEST_STDERR)
@@ -139,9 +142,9 @@ namespace Imm_Tests
 		CLITEST_BEGIN(missing_input_file1_on_ib_should_raise_IO_ERROR)
 			std::string error = "ImmFile Error:\n\n"
 				"File \"missing.imm\" could not be opened\n";
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -ib missing.imm file2 file3")
+			EXEC(COMM " -ib missing.imm file2 file3")
 
 			RETURNVALUE(6)
 			ISEMPTY(CLITEST_STDERR)
@@ -152,9 +155,9 @@ namespace Imm_Tests
 			std::string error = "ImmFile Error:\n\n"
 				"File \"missing.pam\" could not be opened\n";
 			ADDFILE(ASSETS "pal8out.imm")
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -ib pal8out.imm missing.pam file3")
+			EXEC(COMM " -ib pal8out.imm missing.pam file3")
 
 			RETURNVALUE(6)
 			ISEMPTY(CLITEST_STDERR)
@@ -166,9 +169,9 @@ namespace Imm_Tests
 				"Could not write output file \"garbage?\"\n";
 			ADDFILE(ASSETS "pal8out.imm")
 			ADDFILE(ASSETS "pal8out.pam")
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -ib pal8out.imm pal8out.pam garbage?")
+			EXEC(COMM " -ib pal8out.imm pal8out.pam garbage?")
 
 			RETURNVALUE(6)
 			ISEMPTY(CLITEST_STDERR)
@@ -179,9 +182,9 @@ namespace Imm_Tests
 			ADDFILE(ASSETS "pal8out.bmp")
 			ADDFILE(ASSETS "pal8out.imm")
 			ADDFILE(ASSETS "pal8out.pam")
-			ADDFILE(BUILD "ImmFile.exe")
-			
-			EXEC(CD "ImmFile -bi pal8out.bmp out.imm out.pam")
+			ADDFILE(EXE)
+
+			EXEC(COMM " -bi pal8out.bmp out.imm out.pam")
 
 			RETURNVALUE(0)
 			EXISTS("out.imm")
@@ -196,9 +199,9 @@ namespace Imm_Tests
 			ADDFILE(ASSETS "pal8qnt.bmp")
 			ADDFILE(ASSETS "pal8out.imm")
 			ADDFILE(ASSETS "pal8out.pam")
-			ADDFILE(BUILD "ImmFile.exe")
+			ADDFILE(EXE)
 
-			EXEC(CD "ImmFile -ib pal8out.imm pal8out.pam out.bmp")
+			EXEC(COMM " -ib pal8out.imm pal8out.pam out.bmp")
 
 			RETURNVALUE(0)
 			EXISTS("out.bmp")

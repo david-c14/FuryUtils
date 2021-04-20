@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Dat_Tests.cpp" />
     <ClCompile Include="Imm_Tests.cpp" />
     <ClCompile Include="Init_Cleanup.cpp" />
     <ClCompile Include="pch.cpp">
