@@ -208,8 +208,8 @@ namespace Dat_Tests
 			FILECONTENT(CLITEST_STDOUT, expected)
 			CLITEST_END;
 
-			CLITEST_BEGIN(X_option_should_extract_all_files)
-				std::string expected = "DatFile: Extracting all entries from \"basic.dat\"\n\n"
+		CLITEST_BEGIN(X_option_should_extract_all_files)
+			std::string expected = "DatFile: Extracting all entries from \"basic.dat\"\n\n"
 				" pal8out.bmp\tCompressed - 51%\t9270\t4767\n"
 				" pal4out.bmp\tCompressed - 40%\t4214\t1698\n";
 			ADDFILE(EXE)
@@ -225,6 +225,41 @@ namespace Dat_Tests
 			FILECOMPARE("pal4out.bmp", "expected4.bmp")
 			FILECONTENT(CLITEST_STDOUT, expected)
 			CLITEST_END;
+
+		CLITEST_BEGIN(c_option_should_compress_files)
+			std::string expected = "DatFile: creating compressed archive new.dat\n\n"
+				" pal8out.bmp\tCompressed - 51%\t9270\t4767\n"
+				" pal4out.bmp\tCompressed - 40%\t4214\t1698\n";
+			ADDFILE(EXE)
+			ADDFILE(ASSETS "pal8out.bmp")
+			ADDFILE(ASSETS "pal4out.bmp")
+			ADDFILE(ASSETS "basic.dat")
+
+			EXEC(COMM "-c new.dat pal8out.bmp pal4out.bmp")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECOMPARE("basic.dat", "new.dat")
+			FILECONTENT(CLITEST_STDOUT, expected)
+			CLITEST_END;
+
+		CLITEST_BEGIN(u_option_should_pack_uncompressed_files)
+			std::string expected = "DatFile: creating uncompressed archive new.dat\n\n"
+				" pal8out.bmp\tUncompressed\t9270\n"
+				" pal4out.bmp\tUncompressed\t4214\n";
+			ADDFILE(EXE)
+			ADDFILE(ASSETS "pal8out.bmp")
+			ADDFILE(ASSETS "pal4out.bmp")
+			ADDFILE(ASSETS "uncompressed.dat")
+
+			EXEC(COMM "-u new.dat pal8out.bmp pal4out.bmp")
+
+			RETURNVALUE(0)
+			ISEMPTY(CLITEST_STDERR)
+			FILECOMPARE("uncompressed.dat", "new.dat")
+			FILECONTENT(CLITEST_STDOUT, expected)
+			CLITEST_END;
+
 
 	};
 }
