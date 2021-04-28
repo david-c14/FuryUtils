@@ -10,7 +10,6 @@ typedef DatHeader* datheader_p;
 
 #include "DatExport.h"
 
-
 extern "C" {
 	Dat * __cdecl Dat_createNew() {
 		ErrorCode = Exceptions::NO_ERROR;
@@ -52,7 +51,7 @@ extern "C" {
 		}
 		catch (...) {
 			Exceptions::HANDLE();
-			return 0;
+			return -1;
 		}
 	}
 
@@ -79,6 +78,10 @@ extern "C" {
 			Exceptions::HANDLE();
 		}
 		return false;
+	}
+
+	uint32_t __cdecl Dat_headerSize() {
+		return sizeof(DatHeader);
 	}
 
 	bool __cdecl Dat_header(Dat *dat, uint32_t index, DatHeader *header) {

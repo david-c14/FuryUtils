@@ -22,6 +22,8 @@ extern "C" {
 
 	APIENTRY bool __cdecl Dat_next(dat_p dat, datheader_p header);
 
+	APIENTRY uint32_t __cdecl Dat_headerSize();
+
 	APIENTRY bool __cdecl Dat_header(dat_p dat, uint32_t index, datheader_p header);
 
 	APIENTRY bool __cdecl Dat_entry(dat_p dat, uint32_t index, uint8_t *buffer, uint32_t size);

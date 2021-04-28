@@ -18,6 +18,8 @@ namespace carbon14.FuryUtils
             public UInt32 CompressedSize;
             [MarshalAs(UnmanagedType.U1)]
             public bool IsNotCompressed;
+
+            public static int StructureSize = Dat_headerSize();
         }
 
         public class DatItem
@@ -71,6 +73,9 @@ namespace carbon14.FuryUtils
         private static extern bool Dat_next(IntPtr datFile, ref DatHeader header);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int Dat_headerSize();
+
+        [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern bool Dat_header(IntPtr datFile, UInt32 index, ref DatHeader header);
 
         [DllImport("FuryUtils.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -99,6 +104,14 @@ namespace carbon14.FuryUtils
         {
             _dat = Dat_create(buffer, buffer.Length);
             FuryException.Throw();
+        }
+
+        private void CheckHeaderSize(DatHeader header)
+        {
+            if (Marshal.SizeOf(header) != DatHeader.StructureSize)
+            {
+                throw new SEHException("Data size mismatch between assembly and unmanaged library");
+            }
         }
 
         protected void CheckDisposed()
@@ -142,6 +155,7 @@ namespace carbon14.FuryUtils
         protected DatItem Next()
         {
             DatHeader header = new DatHeader();
+            CheckHeaderSize(header);
             if (Dat_next(_dat, ref header))
             {
                 return new DatItem(header, this, _index);
@@ -154,6 +168,7 @@ namespace carbon14.FuryUtils
         {
             CheckDisposed();
             DatHeader header = new DatHeader();
+            CheckHeaderSize(header);
             if (Dat_header(_dat, (UInt32)index, ref header))
             {
                 return new DatItem(header, this, (UInt32)index);
