@@ -1,2 +1,2 @@
-#define APIEXPORT __declspec(dllexport)
+#define APIENTRY __declspec(dllexport)
 #include "../../../src/Bmp.cpp"

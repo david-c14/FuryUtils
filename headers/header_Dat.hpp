@@ -2,19 +2,19 @@
 #include <vector>
 #include "header_Exceptions.hpp"
 
-#ifndef APIEXPORT
-#define APIEXPORT
+#ifndef APIENTRY
+#define APIENTRY
 #endif
 
 #pragma pack(push, 1)
-struct APIEXPORT DatHeader {
+struct APIENTRY DatHeader {
 	char FileName[13];
 	uint32_t UncompressedSize;
 	uint32_t CompressedSize;
 	uint8_t IsNotCompressed;
 };
 
-struct APIEXPORT DatEntry {
+struct APIENTRY DatEntry {
 	DatHeader Header;
 	uint32_t CompressedBufferOffset;
 };
@@ -23,7 +23,7 @@ struct APIEXPORT DatEntry {
 #pragma warning(push)
 #pragma warning(disable:4251)
 
-struct APIEXPORT Dat {
+struct APIENTRY Dat {
 
 private:
 

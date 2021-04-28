@@ -3,8 +3,8 @@
 #include "header_BinaryIO.hpp"
 #include "header_Exceptions.hpp"
 
-#ifndef APIEXPORT
-#define APIEXPORT
+#ifndef APIENTRY
+#define APIENTRY
 #endif
 
 #pragma pack(push, 1)
@@ -18,7 +18,7 @@ struct RGBTriple {
 #pragma warning(push)
 #pragma warning(disable:4251)
 
-struct APIEXPORT Imm {
+struct APIENTRY Imm {
 
 protected: 
 	std::vector<RGBTriple> _palette;
