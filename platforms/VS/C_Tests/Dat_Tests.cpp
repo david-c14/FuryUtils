@@ -191,5 +191,76 @@ namespace Dat_Tests
 			}
 			Dat_destroy(dat);
 		}
+
+		TEST_METHOD(Given_a_new_dat_When_entryCount_is_called_Then_the_count_is_zero) {
+			dat_p dat = Dat_createNew();
+			try {
+				Assert::AreEqual(0, Dat_entryCount(dat), L"Incorrect entry count returned");
+			}
+			catch (...) {
+
+			}
+			Dat_destroy(dat);
+		}
+
+		TEST_METHOD(Given_a_new_dat_When_size_is_called_Then_the_result_is_two) {
+			dat_p dat = Dat_createNew();
+			try {
+				Assert::AreEqual((uint32_t)2, Dat_size(dat), L"Incorrect size returned");
+			}
+			catch (...) {
+
+			}
+			Dat_destroy(dat);
+		}
+
+		TEST_METHOD(Given_a_new_dat_When_files_are_added_with_compression_Then_the_resulting_buffer_is_correct) {
+			std::vector<uint8_t> expected = utils::ReadFile("basic.dat");
+			std::vector<uint8_t> pal8out = utils::ReadFile("pal8out.bmp");
+			std::vector<uint8_t> pal4out = utils::ReadFile("pal4out.bmp");
+			dat_p dat = Dat_createNew();
+			try {
+				Dat_add(dat, "pal8out.bmp", pal8out.data(), pal8out.size(), true);
+				Dat_add(dat, "pal4out.bmp", pal4out.data(), pal4out.size(), true);
+				uint32_t size = Dat_size(dat);
+				std::vector<uint8_t> actualBuffer(size);
+				bool result = Dat_buffer(dat, actualBuffer.data(), actualBuffer.size());
+				Assert::AreEqual(expected.size(), actualBuffer.size(), L"File sizes are incorrect");
+				Assert::IsTrue(result, L"Return value is incorrect");
+				int cmp = memcmp(expected.data(), actualBuffer.data(), actualBuffer.size());
+				Assert::AreEqual(0, cmp, L"Files do not compare equal");
+			}
+			catch (...) {
+
+			}
+			Dat_destroy(dat);
+		}
+
+		TEST_METHOD(Given_a_new_dat_When_files_are_added_without_compression_Then_the_resulting_buffer_is_correct) {
+			std::vector<uint8_t> pal8out = utils::ReadFile("pal8out.bmp");
+			dat_p dat = Dat_createNew();
+			try {
+				Dat_add(dat, "pal8out.bmp", pal8out.data(), pal8out.size(), false);
+				uint32_t size = Dat_size(dat);
+				std::vector<uint8_t> buffer(size);
+				bool result = Dat_buffer(dat, buffer.data(), buffer.size());
+				Assert::IsTrue(result, L"Return value is incorrect");
+				Assert::AreEqual(24 + pal8out.size(), size, L"Buffer size is incorrect");
+				Assert::AreEqual((uint8_t)1, buffer[0], L"First byte of buffer is incorrect");
+				Assert::AreEqual((uint8_t)0, buffer[1], L"Second byte of buffer is incorrect");
+				DatHeader header;
+				memcpy(&header, buffer.data() + 2, sizeof(DatHeader));
+				Assert::AreEqual((uint32_t)9270, header.CompressedSize, L"Compressed size is incorrect");
+				Assert::AreEqual((uint32_t)9270, header.UncompressedSize, L"Uncompressed size is incorrect");
+				Assert::AreEqual((uint8_t)1, header.IsNotCompressed, L"Compression Flag is incorrect");
+				Assert::AreEqual("pal8out.bmp", header.FileName, L"Filename is incorrect");
+				int cmp = memcmp(pal8out.data(), buffer.data() + 24, pal8out.size());
+				Assert::AreEqual(0, cmp, L"Files do not compare equal");
+			}
+			catch (...) {
+
+			}
+			Dat_destroy(dat);
+		}
 	};
 }
