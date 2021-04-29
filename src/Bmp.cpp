@@ -1,4 +1,4 @@
-#include "../headers/header_Bmp.hpp"
+#include "../headers/Bmp.hpp"
 
 #pragma pack(push, 1)
 struct BitmapFileHeader {

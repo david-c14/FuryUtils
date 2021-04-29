@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "header_BinaryIO.hpp"
-#include "header_Exceptions.hpp"
+#include "BinaryIO.hpp"
+#include "Exceptions.hpp"
 
 #ifndef APIENTRY
 #define APIENTRY

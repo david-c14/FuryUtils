@@ -1,24 +1,13 @@
 #pragma once
 #include <vector>
-#include "header_Exceptions.hpp"
+#include "Exceptions.hpp"
 
 #ifndef APIENTRY
 #define APIENTRY
 #endif
 
-#pragma pack(push, 1)
-struct APIENTRY DatHeader {
-	char FileName[13];
-	uint32_t UncompressedSize;
-	uint32_t CompressedSize;
-	uint8_t IsNotCompressed;
-};
-
-struct APIENTRY DatEntry {
-	DatHeader Header;
-	uint32_t CompressedBufferOffset;
-};
-#pragma pack(pop)
+#include "DatHeader.hpp"
+#include "DatEntry.hpp"
 
 #pragma warning(push)
 #pragma warning(disable:4251)

@@ -2,8 +2,8 @@
 #include "CppUnitTest.h"
 #include <fstream>
 #include <vector>
-#include "../../../headers/header_Dat.hpp"
-#include "../../../headers/header_Exceptions.hpp"
+#include "../../../headers/Dat.hpp"
+#include "../../../headers/Exceptions.hpp"
 #include "utils.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

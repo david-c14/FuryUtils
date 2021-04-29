@@ -1,11 +1,10 @@
 #define APIENTRY __declspec(dllexport)
-#include "../../../headers/header_BinaryIO.hpp"
+#include "../../../headers/BinaryIO.hpp"
 #include "../../../src/Dat.cpp"
 
 #ifndef DAT_P
 #define DAT_P
 typedef Dat* dat_p;
-typedef DatHeader* datheader_p;
 #endif
 
 #include "DatExport.h"
@@ -78,10 +77,6 @@ extern "C" {
 			Exceptions::HANDLE();
 		}
 		return false;
-	}
-
-	uint32_t __cdecl Dat_headerSize() {
-		return sizeof(DatHeader);
 	}
 
 	bool __cdecl Dat_header(Dat *dat, uint32_t index, DatHeader *header) {

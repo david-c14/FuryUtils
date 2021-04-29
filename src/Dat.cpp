@@ -1,4 +1,4 @@
-#include "../headers/header_Dat.hpp"
+#include "../headers/Dat.hpp"
 
 void Dat::InternalEntry(std::vector<uint8_t> &inputBuffer, uint16_t index) {
 	uint32_t start = entries[index].CompressedBufferOffset;
