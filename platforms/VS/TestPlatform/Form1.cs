@@ -22,7 +22,7 @@ namespace TestPlatform
             }
             Dat df = new Dat(buffer);
             MessageBox.Show(df.Count.ToString());
-            foreach (Dat.DatItem dfe in df.Items())
+            foreach (Dat.DatItem dfe in df.Items)
             {
                 MessageBox.Show(dfe.FileName);
                 if (dfe.FileName == "PASSW.DTA")
@@ -53,7 +53,7 @@ namespace TestPlatform
             buffer = df.Buffer();
 
             MessageBox.Show(df.Count.ToString());
-            foreach(Dat.DatItem dfe in df.Items())
+            foreach(Dat.DatItem dfe in df.Items)
             {
                 MessageBox.Show(dfe.FileName);
             }

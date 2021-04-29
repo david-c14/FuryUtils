@@ -7,6 +7,7 @@ namespace Exceptions {
 
 	std::string GetMessage(int error) {
 		switch (error) {
+		case NO_ERROR: return "";
 		case INVALID_FORMAT: return "Invalid format";
 		case UNSUPPORTED_FORMAT: return "Unsupported format";
 		case BUFFER_OVERFLOW: return "Buffer overflow";

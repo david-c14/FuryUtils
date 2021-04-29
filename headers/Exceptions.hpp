@@ -37,6 +37,7 @@ namespace Exceptions
 	const char ERROR_BMP_COMPRESSION_ERROR[] = "Compressed data contains an error";
 
 	const char ERROR_DAT_COMPRESSION_SIZE_MISMATCH[] = "Uncompressed data is larger than declared size";
+	const char ERROR_DAT_BUFFER_TOO_SMALL[] = "Buffer too small";
 
 	enum Error
 #include "../src/errorcodes.txt"

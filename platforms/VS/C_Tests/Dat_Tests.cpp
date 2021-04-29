@@ -184,7 +184,7 @@ namespace Dat_Tests
 				bool result = Dat_entry(dat, 0, actualBuffer.data(), actualBuffer.size());
 				Assert::IsFalse(result, L"Return value is incorrect");
 				Assert::AreEqual(3, GetExceptionCode(), L"Incorrect error code");
-				Assert::AreEqual("Attempt to read beyond end of buffer", GetExceptionString(), L"Incorrect error message");
+				Assert::AreEqual("Buffer too small", GetExceptionString(), L"Incorrect error message");
 			}
 			catch (...) {
 
