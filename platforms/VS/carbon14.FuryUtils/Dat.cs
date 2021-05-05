@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace carbon14.FuryUtils
 {
-    public class Dat : IDisposable
+    public class Dat : IDisposable, IEnumerable
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct DatHeader
@@ -119,7 +120,7 @@ namespace carbon14.FuryUtils
             }
         }
 
-        public IEnumerable<DatItem> Items
+        protected IEnumerable<DatItem> Items
         {
             get
             {
@@ -213,6 +214,9 @@ namespace carbon14.FuryUtils
             _disposed = true;
         }
 
-
+        public IEnumerator GetEnumerator()
+        {
+            return ((IEnumerable)Items).GetEnumerator();
+        }
     }
 }

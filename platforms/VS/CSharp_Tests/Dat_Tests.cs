@@ -20,7 +20,7 @@ namespace CSharp_Tests
         {
             uint count = 0;
             Dat df = new Dat(Utils.ReadFile("basic.dat"));
-            foreach(Dat.DatItem item in df.Items)
+            foreach(Dat.DatItem item in df)
             {
                 Assert.AreEqual(count, item.Index, "Index is not correct");
                 Assert.IsTrue(item.IsCompressed, "Compression flag is not correct");
@@ -122,7 +122,7 @@ namespace CSharp_Tests
             df.Add("pal8out.bmp", pal8, true);
             df.Add("pal4out.bmp", pal4, false);
             uint count = 0;
-            foreach (Dat.DatItem item in df.Items)
+            foreach (Dat.DatItem item in df)
             {
                 Assert.AreEqual(count, item.Index, "Index is not correct");
                 switch (count)
