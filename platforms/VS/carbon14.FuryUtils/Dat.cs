@@ -24,31 +24,33 @@ namespace carbon14.FuryUtils
         {
             private DatHeader _header;
             private readonly Dat _dat;
-            private readonly UInt32 _index;
 
             internal DatItem(DatHeader header, Dat dat, UInt32 index)
             {
                 _header = header;
                 _dat = dat;
-                _index = index;
+                Index = index;
             }
 
             public string FileName => new string(_header.FileName, 0, Array.IndexOf(_header.FileName, '\0'));
             public UInt32 UncompressedSize => _header.UncompressedSize;
             public UInt32 CompressedSize => _header.CompressedSize;
-            public bool IsNotCompressed => _header.IsNotCompressed;
-            public UInt32 Index => _index;
+            public bool IsCompressed =>  !_header.IsNotCompressed;
+            public UInt32 Index { get; }
 
-            public byte[] Buffer()
+            public byte[] Buffer
             {
-                _dat.CheckDisposed();
-                byte[] buffer = new byte[UncompressedSize];
-                if (Dat_entry(_dat.Pointer, _index, buffer, buffer.Length) == 1)
+                get
                 {
-                    return buffer;
+                    _dat.CheckDisposed();
+                    byte[] buffer = new byte[UncompressedSize];
+                    if (Dat_entry(_dat.Pointer, Index, buffer, buffer.Length) == 1)
+                    {
+                        return buffer;
+                    }
+                    FuryException.Throw();
+                    return null;
                 }
-                FuryException.Throw();
-                return null;
             }
         }
 
@@ -173,16 +175,19 @@ namespace carbon14.FuryUtils
             FuryException.Throw();
         }
 
-        public byte[] Buffer()
+        public byte[] Buffer
         {
-            CheckDisposed();
-            byte[] buffer = new byte[Dat_size(_dat)];
-            if (Dat_buffer(_dat, buffer, buffer.Length) == 1)
+            get
             {
-                return buffer;
+                CheckDisposed();
+                byte[] buffer = new byte[Dat_size(_dat)];
+                if (Dat_buffer(_dat, buffer, buffer.Length) == 1)
+                {
+                    return buffer;
+                }
+                FuryException.Throw();
+                return null;
             }
-            FuryException.Throw();
-            return null;
         }
 
         public void Dispose()

@@ -27,7 +27,7 @@ namespace TestPlatform
                 MessageBox.Show(dfe.FileName);
                 if (dfe.FileName == "PASSW.DTA")
                 {
-                    byte[] passwordFile = dfe.Buffer();
+                    byte[] passwordFile = dfe.Buffer;
 
                 }
             }
@@ -50,7 +50,7 @@ namespace TestPlatform
                 fs.Read(buffer, 0, buffer.Length);
             }
             df.Add("PASSW2.DTA", buffer, true);
-            buffer = df.Buffer();
+            buffer = df.Buffer;
 
             MessageBox.Show(df.Count.ToString());
             foreach(Dat.DatItem dfe in df.Items)
