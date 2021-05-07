@@ -6,7 +6,7 @@ using System.Text;
 
 namespace carbon14.FuryUtils
 {
-    public class Dat : IDisposable, IEnumerable
+    public class Dat : IDisposable, IEnumerable<Dat.DatItem>
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct DatHeader
@@ -216,7 +216,13 @@ namespace carbon14.FuryUtils
 
         public IEnumerator GetEnumerator()
         {
-            return ((IEnumerable)Items).GetEnumerator();
+            return Items.GetEnumerator();
         }
+
+        IEnumerator<DatItem> IEnumerable<DatItem>.GetEnumerator()
+        {
+            return Items.GetEnumerator();
+        }
+
     }
 }
