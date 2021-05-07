@@ -43,7 +43,7 @@ extern "C" {
 		return true;
 	}
 
-	uint32_t __cdecl Imm_pixelSize(Imm *imm) {
+	uint32_t __cdecl Imm_immSize(Imm *imm) {
 		ErrorCode = Exceptions::NO_ERROR;
 		ErrorString = "";
 		try {
@@ -55,7 +55,7 @@ extern "C" {
 		return 0;
 	}
 
-	uint8_t __cdecl Imm_pixelBuffer(Imm *imm, uint8_t *buffer, uint32_t size) {
+	uint8_t __cdecl Imm_immBuffer(Imm *imm, uint8_t *buffer, uint32_t size) {
 		ErrorCode = Exceptions::NO_ERROR;
 		ErrorString = "";
 		try {
@@ -75,7 +75,7 @@ extern "C" {
 		return true;
 	}
 
-	uint32_t __cdecl Imm_paletteSize(Imm *imm) {
+	uint32_t __cdecl Imm_pamSize(Imm *imm) {
 		ErrorCode = Exceptions::NO_ERROR;
 		ErrorString = "";
 		try {
@@ -87,7 +87,7 @@ extern "C" {
 		return 0;
 	}
 
-	uint8_t __cdecl Imm_paletteBuffer(Imm *imm, uint8_t *buffer, uint32_t size) {
+	uint8_t __cdecl Imm_pamBuffer(Imm *imm, uint8_t *buffer, uint32_t size) {
 		ErrorCode = Exceptions::NO_ERROR;
 		ErrorString = "";
 		try {

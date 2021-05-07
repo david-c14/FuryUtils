@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BmpExport.h" />
     <ClInclude Include="DatExport.h" />
     <ClInclude Include="ExceptionsExport.h" />
     <ClInclude Include="framework.h" />

@@ -18,8 +18,8 @@ namespace Exceptions
 
 	const char ERROR_IO_READ_BEYOND_BUFFER[] = "Attempt to read beyond end of buffer";
 
-	const char ERROR_IMM_SHORT_HEADER[] = "image buffer size is too short for valid Imm";
-	const char ERROR_IMM_PALETTE_SIZE[] = "palette buffer is the wrong size";
+	const char ERROR_IMM_SHORT_HEADER[] = "Image buffer size is too short for valid Imm";
+	const char ERROR_IMM_PALETTE_SIZE[] = "Palette buffer is the wrong size";
 	const char ERROR_IMM_HEADER_MAGIC[] = "First 4 characters of image buffer should be 'LIBN'";
 	const char ERROR_IMM_SIZE_MISMATCH[] = "Image buffer size does not match declared size";
 	const char ERROR_IMM_NOT_IMPLEMENTED[] = "Image format not implemented";
