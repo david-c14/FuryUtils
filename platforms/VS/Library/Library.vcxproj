@@ -166,6 +166,7 @@
     <ClInclude Include="DatExport.h" />
     <ClInclude Include="ExceptionsExport.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ImmExport.h" />
     <ClInclude Include="Library.h" />
   </ItemGroup>
   <ItemGroup>
