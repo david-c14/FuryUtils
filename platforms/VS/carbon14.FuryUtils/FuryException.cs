@@ -9,11 +9,11 @@ namespace carbon14.FuryUtils
         {
         }
 
-        public FuryException(ErrorCodes errorCode, string message): this(errorCode, message, null)
+        public FuryException(ErrorCodes errorCode, string message) : this(errorCode, message, null)
         {
         }
 
-        public FuryException(ErrorCodes errorCode, string message, Exception innerException): base(message, innerException)
+        public FuryException(ErrorCodes errorCode, string message, Exception innerException) : base(message, innerException)
         {
             ErrorCode = errorCode;
         }

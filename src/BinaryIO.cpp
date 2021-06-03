@@ -1,5 +1,5 @@
 #include "../headers/BinaryIO.hpp"
-#include "../headers/Exceptions.hpp"
+#include "../include/Exceptions.hpp"
 
 namespace BinaryIO {
 

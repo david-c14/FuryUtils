@@ -1,0 +1,4 @@
+LIBRARY FuryUtils
+EXPORTS
+	GetExceptionCode
+	GetExceptionString

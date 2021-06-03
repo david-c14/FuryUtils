@@ -24,9 +24,6 @@
     <ClInclude Include="DatExport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExceptionsExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ImmExport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -53,5 +50,13 @@
     <ClCompile Include="Bmp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="exceptions_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FuryUtils.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

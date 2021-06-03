@@ -1,4 +1,4 @@
-#include "../headers/Exceptions.hpp"
+#include "../include/exceptions.hpp"
 
 thread_local int ErrorCode = Exceptions::NO_ERROR;
 thread_local std::string ErrorString;

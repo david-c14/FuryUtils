@@ -163,6 +163,7 @@
     <ClCompile Include="Bmp_Tests_Internal.cpp" />
     <ClCompile Include="Bmp_Tests_External.cpp" />
     <ClCompile Include="Dat_Tests_Internal.cpp" />
+    <ClCompile Include="ExceptionsTests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

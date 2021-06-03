@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace Exceptions
 {
@@ -36,15 +37,5 @@ namespace Exceptions
 	const char ERROR_DAT_BUFFER_TOO_SMALL[] = "Buffer too small";
 
 	enum Error
-	{
-		NO_ERROR,
-		INVALID_FORMAT,
-		UNSUPPORTED_FORMAT,
-		BUFFER_OVERFLOW,
-		INDEX_OUT_OF_RANGE,
-		NOT_IMPLEMENTED,
-		IO_ERROR,
-		UNKNOWN_ERROR,
-		MAX_ERROR
-	};
+#include "errorcodes.h"
 }

@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="copy ..\..\..\src\c#errorprefix.txt + ..\..\..\src\errorcodes.txt + ..\..\..\src\c#errorsuffix.txt ErrorCodes.cs" />
+    <Exec Command="copy ..\..\..\src\c#errorprefix.txt + ..\..\..\include\errorcodes.h + ..\..\..\src\c#errorsuffix.txt ErrorCodes.cs" />
   </Target>
 
 </Project>
