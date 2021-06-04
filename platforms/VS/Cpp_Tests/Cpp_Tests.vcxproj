@@ -162,7 +162,7 @@
   <ItemGroup>
     <ClCompile Include="Bmp2Imm_Tests.cpp" />
     <ClCompile Include="Bmp_Tests.cpp" />
-    <ClCompile Include="Dat_Tests_Internal.cpp" />
+    <ClCompile Include="Dat_Tests.cpp" />
     <ClCompile Include="Imm2Bmp_Tests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

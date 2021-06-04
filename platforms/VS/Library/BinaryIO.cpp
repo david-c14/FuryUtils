@@ -1,1 +1,1 @@
-//#include "../../../src/BinaryIO.cpp"
+#include "../../../src/BinaryIO.cpp"

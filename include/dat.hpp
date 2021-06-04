@@ -1,20 +1,22 @@
 #pragma once
 
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+
+#include <vector>
+#include "datheader.h"
 #pragma pack(push, 1)
 
-struct _declspec(dllimport) DatHeader {
-	char FileName[13];
-	uint32_t UncompressedSize;
-	uint32_t CompressedSize;
-	uint8_t IsNotCompressed;
-};
+#pragma warning(push)
+#pragma warning(disable:4251)
 
-struct _declspec(dllimport) DatEntry {
+struct APIENTRY DatEntry {
 	DatHeader Header;
 	uint32_t CompressedBufferOffset;
 };
 
-struct _declspec(dllimport) Dat {
+struct APIENTRY Dat {
 
 private:
 
@@ -42,5 +44,5 @@ public:
 	void Buffer(std::vector<uint8_t> &inputBuffer);
 };
 
-
+#pragma warning(pop)
 #pragma pack(pop)

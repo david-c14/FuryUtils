@@ -181,6 +181,7 @@
     <ClCompile Include="exceptions_c.c" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Imm.cpp" />
+    <ClCompile Include="dat_c.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FuryUtils.def" />

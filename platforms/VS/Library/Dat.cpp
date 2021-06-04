@@ -1,3 +1,7 @@
+#define APIENTRY __declspec(dllexport)
+#include "../../../src/Dat.cpp"
+#include "../../../src/DatWrappers.cpp"
+
 //#define APIENTRY __declspec(dllexport)
 //#include "../../../headers/BinaryIO.hpp"
 //#include "../../../src/Dat.cpp"
