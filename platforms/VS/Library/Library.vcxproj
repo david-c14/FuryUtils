@@ -167,21 +167,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BmpExport.h" />
-    <ClInclude Include="DatExport.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="ImmExport.h" />
     <ClInclude Include="Library.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryIO.cpp" />
     <ClCompile Include="Bmp.cpp" />
+    <ClCompile Include="bmp_c.c" />
     <ClCompile Include="Dat.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="exceptions_c.c" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Imm.cpp" />
     <ClCompile Include="dat_c.c" />
+    <ClCompile Include="imm_c.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FuryUtils.def" />

@@ -21,15 +21,6 @@
     <ClInclude Include="Library.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DatExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImmExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BmpExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -54,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dat_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imm_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bmp_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

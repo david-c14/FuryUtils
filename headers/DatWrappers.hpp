@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef __DAT_P__
 #define __DAT_P__
 typedef void* dat_p;

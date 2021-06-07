@@ -13,3 +13,13 @@ EXPORTS
 	Dat_add
 	Dat_size
 	Dat_buffer
+	Imm_size
+	Imm_buffer
+	Imm_immSize
+	Imm_immBuffer
+	Imm_pamSize
+	Imm_pamBuffer
+	Bmp_createFromBmp
+	Bmp_createFromImmAndPam
+	Bmp_destroy
+

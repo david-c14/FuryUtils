@@ -21,16 +21,13 @@
     <ClCompile Include="utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bmp_Tests_Internal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bmp_Tests_External.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Dat_Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Wrappers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bmp_Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,9 +36,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bmp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wrappers.h">

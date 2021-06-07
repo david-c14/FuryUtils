@@ -160,8 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bmp_Tests_Internal.cpp" />
-    <ClCompile Include="Bmp_Tests_External.cpp" />
+    <ClCompile Include="Bmp_Tests.cpp" />
     <ClCompile Include="Wrappers.c">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch.h</PrecompiledHeaderFile>
@@ -180,7 +179,6 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bmp.h" />
     <ClInclude Include="wrappers.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="utils.hpp" />

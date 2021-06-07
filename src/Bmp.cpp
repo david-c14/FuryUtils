@@ -1,4 +1,6 @@
-#include "../headers/Bmp.hpp"
+#include "../headers/BinaryIO.hpp"
+#include "../include/exceptions.hpp"
+#include "../include/bmp.hpp"
 
 #pragma pack(push, 1)
 struct BitmapFileHeader {
