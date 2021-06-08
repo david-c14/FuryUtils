@@ -37,3 +37,4 @@ obj/
 .vs/
 testing/
 packages/
+*.EXAMPLE
